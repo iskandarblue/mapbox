@@ -9,10 +9,12 @@
 <style>
   body { margin:0; padding:0; }
   #map { position:absolute; top:0; bottom:0; width:100%; }
+  h1 { color: #fff; position: absolute; left: 50px; top: 100px; z-index: 1345; opacity: 0.5 }
   .label { color: #222; display: inline-block; height: 20px; width: 30px; text-align: center; line-height: 20px; padding-left: 5px; padding-right: 5px; left: -15px;  top: -10px; }
 </style>
 </head>
 <body>
+<h1>Citibike: rebalancing <br /> bikes received <br /> per station </h1>
 <div id='map'></div>
 
 <script>
@@ -30,27 +32,31 @@ L.mapbox.featureLayer()
   .on('ready', function(e) {
 
     e.target.eachLayer(function(layer) {
+      var source = e.target.getGeoJSON();
 
 //        console.log(layer.latLng());
+///
 
         L.circleMarker([layer.feature.geometry.coordinates[1],layer.feature.geometry.coordinates[0]], {
-          radius: layer.feature.properties.agg_RB_Freq/1000,
+          radius: Math.sqrt(layer.feature.properties.agg_RB_Freq/200),
           //radius: Math.sqrt(layer.feature.properties.capacity)*4,
           fillColor: "#00CC77",
           stroke: false,
           fillOpacity: 0.5
         })
-        .on('click', function(e) { console.log('click'); })
+        .bindPopup('' + layer.feature.properties['agg_RB_Freq'])
+        //.on('click', function(e) { console.log('click'); })
         .addTo(stationsLayer);
 
-        layer.feature.properties['icon'] = {
+/*        layer.feature.properties['icon'] = {
         "className": "label", // class name to style
         "html": layer.feature.properties.agg_RB_Freq, // add html content inside the marker
         "iconSize": null // size of icon, use null to set the size in CSS
         };
-        layer.bindPopup(layer.feature.properties['STATION_ID']);
+        layer.bindPopup(layer.feature.properties['agg_RB_Freq']);
         layer.setIcon(L.divIcon(layer.feature.properties.icon));
         layer.addTo(labelsLayer);
+*/
 
 
         })
@@ -58,6 +64,13 @@ L.mapbox.featureLayer()
 
   });
 //  .addTo(map);
+
+stationsLayer.on('mouseover', function(e) {
+    e.layer.openPopup();
+});
+stationsLayer.on('mouseout', function(e) {
+    e.layer.closePopup();
+});
 
 map.on('zoomend', function() {
   console.log(map.getZoom());
