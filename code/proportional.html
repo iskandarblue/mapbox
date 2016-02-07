@@ -34,6 +34,10 @@ L.mapbox.featureLayer()
     e.target.eachLayer(function(layer) {
       var source = e.target.getGeoJSON();
 
+L.mapbox.featureLayer()
+        .loadURL('../data/countour_map.geojson')
+        .addTo(map);
+
 //        console.log(layer.latLng());
 ///
 
