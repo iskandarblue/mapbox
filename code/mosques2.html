@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>A simple map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+<style>
+
+      * { font-family: Arial, sans-serif; }
+      body { margin:0; padding:0; }
+
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+      #legend { z-index: 101010; padding: 10px; position: absolute; text-align: center;
+        color: #eee; bottom: 20px; left: 50%; margin-left: -150px; width: 300px; background: rgba(0,0,0,0.75); }
+      #out { background: grey; }
+
+      .items { text-align: center; }
+      .item { display: inline-block; }
+      .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+      .label { display: inline-block; }
+      .caption { line-height: 20px; text-align: center; }
+
+
+    </style>
+    </head>
+    <body>
+    <div id='header'></div>
+
+    <div id='legend'>
+      <div class='items'>
+        <div class='item'><div class='bullet' id='out'></div><div class='label'>mosque</div></div>
+      </div>
+      <div class='caption'>source: JumpStart data (2010)</div>
+      </div>
+
+<div id='map'></div>
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  L.mapbox.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpbHIxMXA3ejAwNWl2Zmx5aXl2MzRhbG4ifQ.qsQjbbm1A71QzVg8OcR7rQ';
+  var map = L.mapbox.map('map', 'mapbox.light')
+      .setView([41.716, 44.7833], 11);
+
+  //adding empty layer
+/*  var stationsLayer = L.mapbox.featureLayer().addTo(map);
+
+  d3.csv("../data/POI_Georgia.csv", function(d,i) {
+
+    //console.log(d);
+
+
+  var stationPopup = "<b>"  + d.name + "</b><br/>historic: " + d.historic;
+  L.circleMarker([d.lon,d.lat], {
+    radius: 10,
+    fillColor: "#FF0000",
+    stroke: false,
+    fillOpacity: 0.3
+  })
+  .bindPopup(stationPopup)
+  .on('mouseover', function(e) { console.log('mouseover'); })
+  .addTo(stationsLayer);
+
+  },
+   function(d){
+        // data imported
+        console.log('data loaded');
+	     }
+  );
+
+*/
+      var clusterGroup = new L.MarkerClusterGroup();
+        map.addLayer(clusterGroup);
+
+      L.mapbox.featureLayer()
+        .loadURL('../data/mosques.geojson')
+        .on('ready', function(e) {
+
+          e.target.eachLayer(function(layer) {
+            clusterGroup.addLayer(layer);
+              })
+        });
+
+
+
+});
+</script>
+</body>
+</html>
