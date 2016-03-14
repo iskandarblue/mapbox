@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Scroll-driven navigation with markers and a narrative</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
+<style>
+  * { font-family: Arial, sans-serif; }
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+<style>
+article {
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0px;
+  left:0;
+  overflow:auto;
+  }
+.quiet {
+  color:rgba(0,0,0,0.5);
+  }
+.scroll {
+  display:block;
+  text-align:center;
+  }
+.sections {
+  background:rgba(255,255,255,0.5);
+  width:240px;
+  }
+section {
+  padding:20px;
+  color:rgba(0,0,0,0.7);
+  -webkit-transition:background 500ms, color 500ms;
+          transition:background 500ms, color 500ms;
+  }
+section.active {
+  background:#fff;
+  color:#404040;
+  }
+</style>
+<div id='map'></div>
+
+<article id='narrative'>
+  <div class='sections prose'>
+    <section id='cover' class='cover active'>
+      <h2>Классификация улиц</h2>
+      <p>STRELKA КБ</p>
+      <small class='scroll quiet'>Scroll &#x25BE;</small>
+    </section>
+    <section id='lav'>
+      <h3>Тип 9: Лаврушинский переулок</h3>
+      <p>Тип 9Ц охватывает улицы, целиком отданные пешеходам.
+На таких улицах разрешается только проезд спецтехники (кареты скорой помощи, пожарные машины и пр.), а также ограниченный по времени суток доступ грузовых автомобилей для доставки това- ров в объекты торгово-бытового обслуживания. Количество пеше- ходных улиц в Москве постоянно растет.</p>
+    </section>
+    <section id='pozhar'>
+      <h3>Тип 8: Пожарский переулок</h3>
+      <p>К типу 8Ц относятся самые узкие улицы (переулки) центра Москвы. Как правило, они имеют сплошной фронт застройки, составляющий порядка 70% их длины. Это наименее интенсивно используемые улицы исторического центра, характеризующиеся низким уровнем как транспортной, так и пешеходной активности. Многие из них — исключительно жилые. Профиля таких улиц (пере- улков) недостаточно для размещения маршрутов общественного транспорта. Уровень коммерческой активности в первых этажах, несмотря на возможности, предоставляемые сплошным фронтом, также сравнительно низкий.</p>
+    </section>
+    <section id='yaki'>
+      <h3>Уникальная: Якиманка Большая улица (от Якиманского проезда до Садового Кольца) </h3>
+      <p>Такие объекты отличаются выраженной инди- видуальностью и представляют для города особую ценность в силу исторически сложившейся объемно-пространственной структуры, а также своей роли как транспортной артерии и места активной социальной жизни.</p>
+    </section>
+      <small class='colophon'>
+        <a href='http://strelka-kb.ru'>STRELKA КБ</a>
+      </small>
+    </section>
+  </div>
+</article>
+
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpbHIxMXA3ejAwNWl2Zmx5aXl2MzRhbG4ifQ.qsQjbbm1A71QzVg8OcR7rQ';
+// In this case, we just hardcode data into the file. This could be dynamic.
+// The important part about this data is that the 'id' property matches
+// the HTML above - that's how we figure out how to link up the
+// map and the data.
+var places = { type: 'FeatureCollection', features: [
+{ geometry: { type: "Point", coordinates: [ 37.6205044159, 55.7424832019 ] },
+  properties: { id: "lav", zoom: 17}, type: 'Feature' },
+{ geometry: { type: "Point", coordinates: [37.6024826542, 55.7412287448] },
+  properties: { id: "pozhar", zoom: 17 }, type: 'Feature' },
+{ geometry: { type: "Point", coordinates: [37.6129250126, 55.7342681109] },
+  properties: { id: "yaki" , zoom: 16}, type: 'Feature' },
+]};
+
+var map = L.mapbox.map('map', 'mapbox.streets', {
+    zoomControl: false
+});
+
+var placesLayer = L.mapbox.featureLayer(places)
+    .addTo(map);
+
+// Ahead of time, select the elements we'll need -
+// the narrative container and the individual sections
+var narrative = document.getElementById('narrative'),
+    sections = narrative.getElementsByTagName('section'),
+    currentId = '';
+
+setId('cover');
+
+function setId(newId) {
+    // If the ID hasn't actually changed, don't do anything
+    if (newId === currentId) return;
+    // Otherwise, iterate through layers, setting the current
+    // marker to a different color and zooming to it.
+    placesLayer.eachLayer(function(layer) {
+        if (layer.feature.properties.id === newId) {
+            map.setView(layer.getLatLng(), layer.feature.properties.zoom || 18);
+            layer.setIcon(L.mapbox.marker.icon({
+                'marker-color': '#a8f'
+            }));
+        } else {
+            layer.setIcon(L.mapbox.marker.icon({
+                'marker-color': '#404040'
+            }));
+        }
+    });
+    // highlight the current section
+    for (var i = 0; i < sections.length; i++) {
+        sections[i].className = sections[i].id === newId ? 'active' : '';
+    }
+    // And then set the new id as the current one,
+    // so that we know to do nothing at the beginning
+    // of this function if it hasn't changed between calls
+    currentId = newId;
+}
+
+// If you were to do this for real, you would want to use
+// something like underscore's _.debounce function to prevent this
+// call from firing constantly.
+narrative.onscroll = function(e) {
+    var narrativeHeight = narrative.offsetHeight;
+    var newId = currentId;
+    // Find the section that's currently scrolled-to.
+    // We iterate backwards here so that we find the topmost one.
+    for (var i = sections.length - 1; i >= 0; i--) {
+        var rect = sections[i].getBoundingClientRect();
+        if (rect.top >= 0 && rect.top <= narrativeHeight) {
+            newId = sections[i].id;
+        }
+    };
+    setId(newId);
+};
+</script>
+</body>
+</html>
