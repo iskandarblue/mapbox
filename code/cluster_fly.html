@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+#map {
+    position: fixed;
+    width:50%;
+}
+#features {
+    width: 50%;
+    margin-left: 50%;
+    font-family: sans-serif;
+    overflow-y: scroll;
+    background-color: #fafafa;
+}
+section {
+    padding:  20px 30px;
+    line-height: 50px;
+    border-bottom: 1px solid #ddd;
+    opacity: 0.1;
+    font-size: 13px;
+}
+section.active {
+    opacity: 1;
+}
+section:last-child {
+    border-bottom: none;
+    margin-bottom: 300px;
+}
+</style>
+
+<div id='map'></div>
+<div id='features'>
+    <section id='NYC' class='active'>
+        <h1>NYC Citi Bike: Availability</h1>
+        <p>Number of bikes / number of total docks</p>
+    </section>
+    <section id='Cluster1'>
+        <h2>Broadway &amp; W 39 St (Times Square)</h2>
+        <p><b><font color="red"> Cluster 1 </font> :  Low - Low - Low </b> These types of stations have relatively low availability and tend to be about 30% full on average throughout the day.</p>
+    </section>
+    <section id='Cluster1B'>
+        <h2>Old Fulton St. (DUMBO)</h2>
+        <p><b><font color="red">  Cluster 1 </font> : Low - Low - Low </b> These types of stations have relatively low availability and tend to be about 30% full on average throughout the day.</p>
+    </section>
+    <section id='Cluster2'>
+        <h2>Hudson St &amp; Reade St (TriBeCa)</h2>
+        <p><b><font color="green">  Cluster 2 </font>: Low - High - Low </b> These types of stations have lower availability in the early morning and night than during the day between <b> 9 am and 4 pm </b> when they are on average 50% full </p>
+    </section>
+    <section id='Cluster2B'>
+        <h2>DeKalb Ave &amp; Hudson Ave (Fort Greene)</h2>
+        <p><b><font color="green">  Cluster 2 </font>: Low - High - Low </b> These types of stations have lower availability in the early morning and at night than during the day between <b> 9 am and 4 pm </b> when they are on average 50% full </p>
+    </section>
+    <section id='Cluster3'>
+        <h2>E 11 St &amp; 2 Ave (East Village)</h2>
+        <p><b><font color="blue"> Cluster 3 </font>: High - Low - High </b> These types of stations have higher availability in the early morning and at night when they averages more than 60% full. Between <b> 8 AM and 6 PM </b> these stations typically are less than 40% full </p>
+    </section>
+    <section id='Cluster3B'>
+        <h2>W 82 St &amp; Central Park West (Upper West Side)</h2>
+        <p><font color="blue"> Cluster 3 </font>: High - Low - High </b> These types of stations have higher availability in the early morning and at night when they averages more than 60% full. Between <b> 8 AM and 6 PM </b> these stations typically are less than 40% full </p>
+    </section>
+
+</div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v8',
+    center: [-73.99974372, 40.71602118],
+    zoom: 11.5,
+    bearing: 37,
+    pitch: 35
+});
+
+var chapters = {
+    'NYC': {
+        bearing: 27,
+        center: [-73.99974372, 40.71602118],
+        zoom: 12.5,
+        pitch: 20,
+        id: 0
+    },
+    'Cluster1': {
+        duration: 6000,
+        center: [-73.98721619, 40.75299641],
+        bearing: 150,
+        zoom: 15,
+        pitch: 40,
+        id: 533
+    },
+    'Cluster1B': {
+        bearing: 90,
+        center: [-73.99383605, 40.70277159],
+        zoom: 14,
+        speed: 0.6,
+        pitch: 40,
+        id: 217
+    },
+    'Cluster2': {
+        bearing: 240,
+        center: [-74.0091059, 40.71625008],
+        speed: 0.7,
+        zoom: 14,
+        pitch: 40,
+        id: 146
+    },
+    'Cluster2B': {
+        bearing: 45,
+        center: [-73.981013, 40.689888],
+        zoom: 15,
+        pitch: 20,
+        speed: 0.5,
+        id: 324
+    },
+    'Cluster3': {
+        bearing: 270,
+        center: [-73.98672378, 40.73047309],
+        zoom: 14,
+        pitch: 60,
+        speed: 0.6,
+        id: 237
+    },
+    'Cluster3B': {
+        bearing: 45,
+        center: [-73.97137, 40.78275],
+        zoom: 11,
+        pitch: 40,
+        id: 3226
+    },
+
+};
+
+// On every scroll event, check which element is on screen
+window.onscroll = function() {
+    var chapterNames = Object.keys(chapters);
+    for (var i = 0; i < chapterNames.length; i++) {
+        var chapterName = chapterNames[i];
+        if (isElementOnScreen(chapterName)) {
+            setActiveChapter(chapterName);
+            break;
+        }
+    }
+};
+
+var activeChapterName = 'Cluster1';
+function setActiveChapter(chapterName) {
+    if (chapterName === activeChapterName) return;
+
+    map.setFilter("markers_selection",["==", "id", chapters[chapterName].id]);
+    console.log();
+    map.flyTo(chapters[chapterName]);
+
+    document.getElementById(chapterName).setAttribute('class', 'active');
+    document.getElementById(activeChapterName).setAttribute('class', '');
+
+    activeChapterName = chapterName;
+}
+
+function isElementOnScreen(id) {
+    var element = document.getElementById(id);
+    var bounds = element.getBoundingClientRect();
+    return bounds.top < window.innerHeight && bounds.bottom > 0;
+}
+
+map.on('style.load', function () {
+    // Add circles as new geoJson source from in-line code above
+    map.addSource("markers2", {
+        "type": "geojson",
+        "data": "http://iskandarblue.github.io/mapbox/data/cluster1.geojson"
+    });
+    // Add a layer showing the circles
+    map.addLayer({
+    "id": "markers2",
+    "source": "markers2",
+    "type": "circle",
+    "paint": {
+        "circle-radius": 6,
+        "circle-color": "#FF0000",
+        "circle-opacity": 0.5
+     }
+    });
+
+    // Add circles as new geoJson source from in-line code above
+    map.addSource("markers3", {
+        "type": "geojson",
+        "data": "http://iskandarblue.github.io/mapbox/data/cluster2.geojson"
+    });
+    // Add a layer showing the circles
+    map.addLayer({
+    "id": "markers3",
+    "source": "markers3",
+    "type": "circle",
+    "paint": {
+        "circle-radius": 6,
+        "circle-color": "#00FF00",
+        "circle-opacity": 0.5
+     }
+    });
+
+    // Add circles as new geoJson source from in-line code above
+    map.addSource("markers4", {
+        "type": "geojson",
+        "data": "http://iskandarblue.github.io/mapbox/data/cluster3.geojson"
+    });
+    // Add a layer showing the circles
+    map.addLayer({
+    "id": "markers4",
+    "source": "markers4",
+    "type": "circle",
+    "paint": {
+        "circle-radius": 6,
+        "circle-color": "#6599FF",
+        "circle-opacity": 0.5
+     }
+    });
+
+    // Add circles as new geoJson source from in-line code above
+    map.addSource("markers5", {
+        "type": "geojson",
+        "data": "http://iskandarblue.github.io/mapbox/data/clusters.geojson"
+    });
+    // Add a layer showing the circles
+    map.addLayer({
+    "id": "markers_selection",
+    "source": "markers5",
+    "type": "circle",
+    "paint": {
+        "circle-radius": 15,
+        "circle-color": "#f0f0f0",
+        "circle-opacity": 0.5
+     }
+   },"marker2");
+
+
+});
+
+
+
+
+</script>
+
+</body>
+</html>
