@@ -19,21 +19,23 @@
     width:50%;
 }
 #features {
-    width: 75%;
+    width: 50%;
     margin-left: 50%;
     font-family: sans-serif;
     overflow-y: scroll;
-    background-color: #fafafa;
+    background-color: #191919;
 }
 section {
     padding:  20px 30px;
     line-height: 50px;
     border-bottom: 1px solid #ddd;
-    opacity: 0.1;
+    opacity: 0.3;
     font-size: 13px;
+    color:rgba(255,255,255,.9)
 }
 section.active {
     opacity: 1;
+    color:rgba(255,255,255,.9)
 }
 section:last-child {
     border-bottom: none;
@@ -46,14 +48,15 @@ section:last-child {
     <section id='NYC' class='active'>
         <h1>NYC Citi Bike: K-means Clustering of Stations by Availability </h1>
         <p>Number of bikes / number of total docks</p>
-        <img src="http://iskandarblue.github.io/mapbox/data/cluster_graph.png"
+        <img src="http://iskandarblue.github.io/mapbox/data/cluster_lines_2015.png"
                 width="580" height="300"
                 scrolling="no" seamless="seamless"
                 frameBorder="0" />
+
     </section>
     <section id='Cluster1'>
         <h2>Broadway &amp; W 39 St (Times Square)</h2>
-        <p><b><font color="red"> Cluster 1 </font> :  Low - Low - Low </b> These types of stations have relatively low availability and tend to be about 30% full on average throughout the day.</p>
+        <p><b><font color="red"> Cluster 1 </font>  :  Low - Low - Low </b> These types of stations have relatively low availability and tend to be about 30% full on average throughout the day.</p>
     </section>
     <section id='Cluster1B'>
         <h2>Old Fulton St. (DUMBO)</h2>
@@ -73,7 +76,7 @@ section:last-child {
     </section>
     <section id='Cluster3B'>
         <h2>W 82 St &amp; Central Park West (Upper West Side)</h2>
-        <p><font color="blue"> Cluster 3 </font>: High - Low - High </b> These types of stations have higher availability in the early morning and at night when they averages more than 60% full. Between <b> 8 AM and 6 PM </b> these stations typically are less than 40% full </p>
+        <p><b><font color="blue"> Cluster 3 </font>: High - Low - High </b> These types of stations have higher availability in the early morning and at night when they averages more than 60% full. Between <b> 8 AM and 6 PM </b> these stations typically are less than 40% full </p>
     </section>
 
 </div>
@@ -93,8 +96,8 @@ var chapters = {
     'NYC': {
         bearing: 27,
         center: [-73.99974372, 40.71602118],
-        zoom: 12.5,
-        pitch: 20,
+        zoom: 11.5,
+        pitch: 25,
         id: 0
     },
     'Cluster1': {
