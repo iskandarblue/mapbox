@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset=utf-8 />
-<title>Custom marker tooltips</title>
+<title>CyArk sites</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 <script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
@@ -44,7 +44,7 @@ var geoJson = [{
         "url": "https://en.wikipedia.org/wiki/Shatili",
         "marker-color": "#66FF66",
         "city": "Shatili შატილი",
-        "innertext": "The village of Shatili squats on the northern slope of the Greater Caucasus mountains in Georgia. Even today the area is considered isolated and remote but in centuries past the villagers could not rely on distant authorities to afford them protection. In early medieval times the villagers hit on a solution which was to shield them from their enemies for hundreds of years. They made their village in to a fortress."
+        "location": "Khevsureti"
     }
 }, {
     type: 'Feature',
@@ -110,7 +110,7 @@ myLayer.on('layeradd', function(e) {
     // Create custom popup content
     var popupContent =  '<a target="_blank" class="popup" href="' + feature.properties.url + '">' +
                             '<img src="' + feature.properties.image + '" />' +
-                            feature.properties.city +
+                            feature.properties.city + feature.properties.location
                         '</a>';
 
     // http://leafletjs.com/reference.html#popup

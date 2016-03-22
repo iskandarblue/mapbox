@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>HTML markers from geoJSON url</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.css' rel='stylesheet'/>
+<style>
+  body { margin:0; padding:0; font-family: Arial, Sans-Serif }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+  #panel { position: absolute; top: 5px; left: 5px; z-index: 1010101; display: block; width: 200px; height: 400px; overflow-y: auto; background: rgba(114,188,212,0.2); color: white;}
+  #panel2 { position: absolute; bottom: 10px; left: 10px; z-index: 1010101; display: block; width: 100px; height: 100px; overflow-y: auto; background: rgba(255,255,255,0.1); color: white;}
+  #menu { position:absolute; top:10px; right: 10px;}
+  .item { border: 1px solid grey; color: white; background: rgba(0,0,0,0.5); padding: 10px; cursor: pointer;  }
+  .item-active { border: 1px solid grey; color: white;  background: rgba(0,128,0,0.5); padding: 10px; cursor: pointer;  }
+
+
+  #menu2 {position: absolute; bottom:10 px; right: 10px}
+  .item2{border: 1px solid grey; color: white; background: rgba(0,0,0,0.5); padding: 10px; cursor: pointer;  }
+  .item2-active{border: 1px solid grey; color: white;  background: rgba(0,128,0,0.5); padding: 10px; cursor: pointer;}
+
+
+</style>
+</head>
+<body>
+<div id='map'></div>
+<div id='menu'>
+
+</div>
+<div id = 'panel'> </div>
+<div id = 'panel2'> </div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpbHIxMXA3ejAwNWl2Zmx5aXl2MzRhbG4ifQ.qsQjbbm1A71QzVg8OcR7rQ';
+
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v8',
+    center: [37.625224, 55.744537,],
+    zoom: 13
+});
+
+var menu = document.getElementById('menu');
+
+map.on('style.load', function () {
+    map.addSource('streets', {
+        "type": "geojson",
+        "data": "https://iskandarblue.github.io/mapbox/data/simplify_prototype.geojson"
+    });
+
+    for(key in conf) {
+      console.log(conf[key]);
+//
+      map.addLayer({
+          "id": conf[key].id,
+          "type": "line",
+          "source": "streets",
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+              "line-color": conf[key].lineColor,
+              "line-opacity": 0.6,
+              "line-width": 2.5
+          },
+          "filter": ["==", "Type", conf[key].filter]
+      });
+
+      var item = document.createElement("div");
+      item.innerHTML = conf[key].label;
+      item.setAttribute("class", "item");
+      item.setAttribute("id", key);
+
+
+      item.onclick = function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var id = e.target.getAttributeNode("id").value;
+          console.log(id);
+
+
+          var visibility = map.getLayoutProperty(conf[id].id, 'visibility');
+          console.log(visibility);
+          if(visibility == 'visible') {
+            map.setLayoutProperty(conf[id].id, 'visibility', 'none');
+            e.target.className = 'item';
+          } else {
+            map.setLayoutProperty(conf[id].id, 'visibility', 'visible');
+            e.target.className = 'item-active'
+          }
+
+
+
+        }
+
+
+      menu.appendChild(item);
+
+    }
+
+
+
+for(key in conf2) {
+  console.log(conf2[key]);
+//
+  map.addLayer({
+      "id": conf2[key].id,
+      "type": "line",
+      "source": "streets",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+          "line-color": conf2[key].lineColor,
+          "line-opacity": 0.6,
+          "line-width": 2.5
+      },
+      "filter": ["==", "year", conf2[key].filter]
+  });
+
+  var item2 = document.createElement("div");
+  item2.innerHTML = conf2[key].label;
+  item2.setAttribute("class", "item2");
+  item2.setAttribute("id", key);
+
+
+  item2.onclick = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var id = e.target.getAttributeNode("id").value;
+      console.log(id);
+
+
+      var visibility = map.getLayoutProperty(conf2[id].id, 'visibility');
+      console.log(visibility);
+      if(visibility == 'visible') {
+        map.setLayoutProperty(conf2[id].id, 'visibility', 'none');
+        e.target.className = 'item2';
+      } else {
+        map.setLayoutProperty(conf2[id].id, 'visibility', 'visible');
+        e.target.className = 'item2-active'
+      }
+
+
+
+    }
+
+
+  menu.appendChild(item2);
+
+}
+
+
+
+
+
+
+    console.log(map.getStyle());
+
+    /*
+
+    map.addLayer({
+        "id": "layer-type6",
+        "type": "line",
+        "source": "streets",
+        "layout": {
+          "visibility": "visible"
+        },
+        "paint": {
+            "line-color": "#ff99ff",
+            "line-opacity": 0.6,
+            "line-width": 2.5
+        },
+        "filter": ["==", "Type", "6"]
+    });
+
+    map.addLayer({
+        "id": "layer-type7",
+        "type": "line",
+        "source": "streets",
+        "layout": {
+          "visibility": "visible"
+        },
+        "paint": {
+            "line-color": "#2EFE64",
+            "line-opacity": 0.6,
+            "line-width": 2.5
+        },
+        "filter": ["==", "Type", "7"]
+    });
+
+    */
+
+    map.addLayer({
+        "id": "m_streets",
+        "type": "line",
+        "source": "streets",
+        "interactive": true,
+        "layout": {},
+        "paint": {
+            "line-color": "#627BC1",
+            "line-opacity": 0.0,
+            "line-width": 2.5
+        }
+    });
+
+
+    map.addLayer({
+        "id": "route-hover",
+        "type": "line",
+        "source": "streets",
+        "layout": {},
+        "paint": {
+            "line-color": "#f48024",
+            "line-opacity": 0.9,
+            "line-width": 2.5
+        },
+        "filter": ["==", "rd_name", ""]
+    });
+
+    map.addLayer({
+    "id" : "street_toggle",
+    "source": "streets",
+    "type": "line",
+    "layout": {"line-join": "round",
+              "line-cap": "round"},
+    "paint": {
+        "line-color": "#FF0000",
+        "line-opacity": 0.9,
+        "line-width:": 3.5
+      }
+    });
+
+
+    var item = document.getElementById('type');
+
+    map.on('click', function(e) {
+        map.featuresAt(e.point, {
+            radius: 5,
+            layer: ["m_streets"]
+        }, function (err, features) {
+            if (!err && features.length) {
+              var props = features[0].properties;
+              document.getElementById('panel').innerHTML = '<h3>' + props.rd_name + '</h3>' + '<div><h3> Renovation year: ' + props.year + '</h3></div>' + '<div><h3> PFI class: ' + props.PFI_class + '</h3></div>' + '<div><h3> Length: ' + Math.round(props.fixed) + 'km' + '</h3></div>' + '<img id = "thumbnailImage" src="https://farm2.staticflickr.com/1536/25347591943_e9c7252b2e_o.png" width="200" height="150" alt="Type_1_no_text"/>';
+
+              $("#thumbnailImage").click(function() {
+                 $(this).attr('width', '400');
+                  $(this).attr('height', '300');
+              });
+
+
+                //map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
+            }
+        });
+    });
+
+
+    map.on('mousemove', function(e) {
+        map.featuresAt(e.point, {
+            radius: 5,
+            layer: ["m_streets"]
+        }, function (err, features) {
+            if (!err && features.length) {
+                map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
+            } else {
+                map.setFilter('route-hover', ['==', 'rd_name', '']);
+            }
+        });
+    });
+
+
+});
+
+
+   //.addTo(map);
+
+
+</script>
+</body>
+</html>
