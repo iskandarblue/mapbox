@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Custom marker tooltips</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
+<style>
+  * { font-family: Arial, sans-serif; }
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+  #legend { z-index: 101010; padding: 10px; position: absolute; text-align: center;
+    color: #eee; bottom: 20px; left: 50%; margin-left: -150px; width: 300px; background: rgba(0,0,0,0.75); }
+  #out { background: red; }
+
+</style>
+</head>
+<body>
+
+  <div id='legend'>
+    <div class='caption'>Potential sites: CyArk</div>
+    </div>
+
+<style>
+.leaflet-popup-content img {
+  max-width:100%;
+  }
+</style>
+<div id='map'></div>
+
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = L.mapbox.map('map', 'mapbox.outdoors')
+    .setView([42.4891203555556, 44.8810065111111], 9);
+
+var myLayer = L.mapbox.featureLayer().addTo(map);
+
+var geoJson = [{
+    type: 'Feature',
+    "geometry": { "type": "Point", "coordinates": [45.1574033, 42.6587069]},
+    "properties": {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/1/15/Khevsureti,_Georgia_%E2%80%94_Village_Shatili.jpg",
+        "url": "https://en.wikipedia.org/wiki/Shatili",
+        "marker-color": "#66FF66",
+        "city": "Shatili შატილი",
+        "innertext": "The village of Shatili squats on the northern slope of the Greater Caucasus mountains in Georgia. Even today the area is considered isolated and remote but in centuries past the villagers could not rely on distant authorities to afford them protection. In early medieval times the villagers hit on a solution which was to shield them from their enemies for hundreds of years. They made their village in to a fortress."
+    }
+}, {
+    type: 'Feature',
+    "geometry": { "type": "Point", "coordinates": [45.5831514, 42.4380498]},
+    "properties": {
+        "image": "https://farm8.staticflickr.com/7160/6553572847_45af1fed67_b.jpg",
+        "url": "https://en.wikipedia.org/wiki/Tusheti",
+        "marker-color": "#66FF66",
+        "city": "Dartlo დართლო"
+    }
+}, {
+    type: 'Feature',
+    "geometry": { "type": "Point", "coordinates": [44.373903, 42.6115094]},
+    "properties": {
+        "image": "http://static.panoramio.com/photos/large/35486133.jpg",
+        "url": "https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BA%D0%B0%D0%B3%D0%BE%D1%80%D0%B8",
+        "marker-color": "#66FF66",
+        "city": "Zakagori castle ზაქაგორი"
+    }
+  }, {
+      type: 'Feature',
+      "geometry": { "type": "Point", "coordinates": [45.5895547, 42.4453936]},
+      "properties": {
+          "image": "http://commondatastorage.googleapis.com/static.panoramio.com/photos/original/93531302.jpg",
+          "url": "http://apa.gov.ge/ru/eco-tourism/Trails/tushetis-turistuli-bilikebi-satesto/3-dartlo-kvavlo",
+          "marker-color": "#66FF66",
+          "city": "Kvavlo კვავლო"
+      }
+    }, {
+        type: 'Feature',
+        "geometry": { "type": "Point", "coordinates": [45.0787572, 42.5470608]},
+        "properties": {
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/LebiskariFortress.jpg/1200px-LebiskariFortress.jpg",
+            "url": "https://de.wikipedia.org/wiki/Lebaiskari",
+            "marker-color": "#66FF66",
+            "city": "Lebaiskari ლებაისკარი"
+        }
+      }, {
+          type: 'Feature',
+          "geometry": { "type": "Point", "coordinates": [44.3992692, 42.5970528]},
+          "properties": {
+              "image": "https://s-media-cache-ak0.pinimg.com/736x/da/58/0e/da580ef6aa9d282f747e2808d8ae4b9d.jpg",
+              "marker-color": "#66FF66",
+              "city": "Ketrisi კეტრისი"
+          }
+        }, {
+            type: 'Feature',
+            "geometry": { "type": "Point", "coordinates": [45.6308787, 42.3746957]},
+            "properties": {
+                "image": "http://static.panoramio.com/photos/large/98215857.jpg",
+                "url": "https://en.wikipedia.org/wiki/Keselo",
+                "marker-color": "#66FF66",
+                "city": "Keselo კესელო"
+            }
+}];
+
+// Add custom popups to each using our custom feature properties
+myLayer.on('layeradd', function(e) {
+    var marker = e.layer,
+        feature = marker.feature;
+
+    // Create custom popup content
+    var popupContent =  '<a target="_blank" class="popup" href="' + feature.properties.url + '">' +
+                            '<img src="' + feature.properties.image + '" />' +
+                            feature.properties.city +
+                        '</a>';
+
+    // http://leafletjs.com/reference.html#popup
+    marker.bindPopup(popupContent,{
+        closeButton: false,
+        minWidth: 320
+    });
+});
+
+// Add features to the map
+myLayer.setGeoJSON(geoJson);
+</script>
+</body>
+</html>
