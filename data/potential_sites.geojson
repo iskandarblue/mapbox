@@ -1,0 +1,16 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                                                                                
+"features": [
+{ "type": "Feature", "properties": { "id": "430738640", "source": null, "name": "შატილი (Shatili)", "amenity": null, "name:en": "Shatili", "name:ka": "შატილი" }, "geometry": { "type": "Point", "coordinates": [ 45.1574033, 42.6587069 ] } },
+{ "type": "Feature", "properties": { "id": "449209837", "source": null, "name": "დართლო (Dartlo)", "amenity": null, "name:en": "Dartlo", "name:ka": "დართლო" }, "geometry": { "type": "Point", "coordinates": [ 45.5831514, 42.4380498 ] } },
+{ "type": "Feature", "properties": { "id": "539514504", "source": null, "name": "აბანო (Abano)", "amenity": null, "name:en": "Abano", "name:ka": "აბანო" }, "geometry": { "type": "Point", "coordinates": [ 43.7272733, 42.1250925 ] } },
+{ "type": "Feature", "properties": { "id": "941363444", "source": null, "name": "კვავლო (Kvavlo)", "amenity": null, "name:en": "Kvavlo", "name:ka": "კვავლო" }, "geometry": { "type": "Point", "coordinates": [ 45.5895547, 42.4453936 ] } },
+{ "type": "Feature", "properties": { "id": "1353704947", "source": null, "name": "ლებაისკარი (Lebaiskari)", "amenity": null, "name:en": "Lebaiskari", "name:ka": "ლებაისკარი" }, "geometry": { "type": "Point", "coordinates": [ 45.0787572, 42.5470608 ] } },
+{ "type": "Feature", "id": -1279294787, "properties": { "id": "3015672509", "source": null, "name": "ზაქაგორი (Zakagori)", "amenity": null, "name:en": "Zakagori", "name:ka": "ზაქაგორი" }, "geometry": { "type": "Point", "coordinates": [ 44.373903, 42.6115094 ] } },
+{ "type": "Feature", "id": -1279290763, "properties": { "id": "3015676533", "source": null, "name": "აბანო (Abano)", "amenity": null, "name:en": "Abano", "name:ka": "აბანო" }, "geometry": { "type": "Point", "coordinates": [ 44.3888678, 42.6045217 ] } },
+{ "type": "Feature", "id": -1279290762, "properties": { "id": "3015676534", "source": null, "name": "კეტრისი (Ketrisi)", "amenity": null, "name:en": "Ketrisi", "name:ka": "კეტრისი" }, "geometry": { "type": "Point", "coordinates": [ 44.3992692, 42.5970528 ] } },
+{ "type": "Feature", "id": -1210669289, "properties": { "id": "3084298007", "source": null, "name": "Keselo Guesthouse", "amenity": null, "name:en": "Keselo Guesthouse", "name:ka": null }, "geometry": { "type": "Point", "coordinates": [ 45.6308787, 42.3746957 ] } }
+]
+}
