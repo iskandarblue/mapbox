@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset='utf-8' />
-<title>Strelka Prototype</title>
+<title>HTML markers from geoJSON url</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
@@ -18,8 +18,8 @@
   .item { border: 1px solid grey; color: white; background: rgba(0,0,0,0.5); padding: 10px; cursor: pointer;  }
   .item-active { border: 1px solid grey; color: white;  background: rgba(0,128,0,0.5); padding: 10px; cursor: pointer;  }
 
-
   #imagePanelPres, #imagePanelPast { display: none; position: absolute; top: 100px; left: 50%; margin-left: -400px; margin-top: 0px; z-index: 1010101; width: 800px; height: 500px; overflow-y: auto; background: rgba(0,0,0,0.5); color: white;}
+
 
   #menu2 {position: absolute; top: 10px; right: 120px}
   .item2{border: 1px solid grey; color: white; background: rgba(0,0,0,0.5); padding: 10px; cursor: pointer;  }
@@ -44,7 +44,7 @@
   <div id='menu-content2'></div>
 </div>
 
-<div id = 'panel'> </div>
+<div id = 'panel'> <h3> Click a street ! </h3> </div>
 <div id = 'panel2'> </div>
 <div>
 <div id = 'imagePanelPast'></div>
@@ -58,77 +58,77 @@
   <map name="imgmap">
            <area shape="circle"
               coords="320,75,25"
-              href="/perl/index.htm" alt="Perl Tutorial"
+              href="#" alt=""
               target="_self"
               onMouseOver="showCaption('7: Устройство остановок общественного транспорта в заездных карманах на дорогах – дублерах')"
               onMouseOut="showCaption('')"/>
 
            <area shape="circle"
               coords="240,100,25"
-              href="/html/index.htm" alt="HTML Tutorial"
+              href="#" alt=""
               target="_self"
               onMouseOver="showCaption('3: Организация крытых велопарков, велобоксов на пересадочных узлах и вблизи велодорожек')"
               onMouseOut="showCaption('')"/>
 
            <area shape="circle"
               coords="175,150,25"
-              href="/php/index.htm" alt="PHP Tutorial"
+              href="#" alt="PHP Tutorial"
               target="_self"
               onMouseOver="showCaption('8: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
               onMouseOut="showCaption('')"/>
 
               <area shape="circle"
                  coords="175,340,25"
-                 href="/php/index.htm" alt="PHP Tutorial"
+                 href="#" alt="PHP Tutorial"
                  target="_self"
                  onMouseOver="showCaption('13: Регулирование уровня освещения в зависимости от погодных условий.  Установка wi-fi передатчиков на участках с интенсивным пешеходным потоком')"
                  onMouseOut="showCaption('')"/>
 
                  <area shape="circle"
                     coords="200,400,25"
-                    href="/php/index.htm" alt="PHP Tutorial"
+                    href="#" alt="PHP Tutorial"
                     target="_self"
                     onMouseOver="showCaption('1: Организация мест отдыха, совмещенных с островками озеленения в транспортно -пересадочных узлах')"
                     onMouseOut="showCaption('')"/>
 
                     <area shape="circle"
                        coords="300,425,25"
-                       href="/php/index.htm" alt="PHP Tutorial"
+                       href="#" alt="PHP Tutorial"
                        target="_self"
                        onMouseOver="showCaption('6: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
                        onMouseOut="showCaption('')"/>
 
                        <area shape="circle"
                           coords="400,415,25"
-                          href="/php/index.htm" alt="PHP Tutorial"
+                          href="#" alt="PHP Tutorial"
                           target="_self"
                           onMouseOver="showCaption('10: Обустройство озелененной разделительной полосы')"
                           onMouseOut="showCaption('')"/>
 
                           <area shape="circle"
                              coords="500,380,25"
-                             href="/php/index.htm" alt="PHP Tutorial"
+                             href="#" alt="PHP Tutorial"
                              target="_self"
                              onMouseOver="showCaption('6: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
                              onMouseOut="showCaption('')"/>
 
                              <area shape="circle"
                                 coords="620,370,25"
-                                href="/php/index.htm" alt="PHP Tutorial"
+                                href="#" alt="PHP Tutorial"
                                 target="_self"
                                 onMouseOver="showCaption('11: Устройство крытых переходов в пересадочных узлах общественного транспорта, обогреваемых остановок общественного транспорта, обогреваемых элементов уличной мебели')"
                                 onMouseOut="showCaption('')"/>
 
                                 <area shape="circle"
                                    coords="680,425,25"
-                                   href="/php/index.htm" alt="PHP Tutorial"
+                                   href="#" alt="PHP Tutorial"
                                    target="_self"
                                    onMouseOver="showCaption('3: Организация крытых велопарков, велобоксов на пересадочных узлах и вблизи велодорожек')"
                                    onMouseOut="showCaption('')"/>
 
                                    <area shape="circle"
                                       coords="740,440,25"
-                                      href="/php/index.htm" alt="PHP Tutorial"
+                                      href="#" alt="PHP Tutorial"
                                       target="_self"
                                       onMouseOver="showCaption('2: Организация транзитных велокоридоров с сопутствующей инфраструктурой вокруг транспортных узлов')"
                                       onMouseOut="showCaption('')"/>
@@ -136,7 +136,7 @@
 
                                 <area shape="circle"
                                    coords="750,360,25"
-                                   href="/php/index.htm" alt="PHP Tutorial"
+                                   href="#" alt="PHP Tutorial"
                                    target="_self"
                                    onMouseOver="showCaption('9: Устройство многорядного озеленения вдоль проезжей части')"
                                    onMouseOut="showCaption('')"/>
@@ -144,49 +144,49 @@
 
                              <area shape="circle"
                                 coords="525,360,25"
-                                href="/php/index.htm" alt="PHP Tutorial"
+                                href="#" alt="PHP Tutorial"
                                 target="_self"
                                 onMouseOver="showCaption('12: Обустройство шумозащитных насыпей')"
                                 onMouseOut="showCaption('')"/>
 
                        <area shape="circle"
                           coords="290,335,25"
-                          href="/php/index.htm" alt="PHP Tutorial"
+                          href="#" alt="PHP Tutorial"
                           target="_self"
                           onMouseOver="showCaption('12: Обустройство шумозащитных насыпей')"
                           onMouseOut="showCaption('')"/>
 
                           <area shape="circle"
                              coords="275,235,25"
-                             href="/php/index.htm" alt="PHP Tutorial"
+                             href="#" alt="PHP Tutorial"
                              target="_self"
                              onMouseOver="showCaption('4: Ориентация основных пешеходных путей вдоль дорог-дублеров')"
                              onMouseOut="showCaption('')"/>
 
                              <area shape="circle"
                                 coords="375,200,25"
-                                href="/php/index.htm" alt="PHP Tutorial"
+                                href="#" alt="PHP Tutorial"
                                 target="_self"
                                 onMouseOver="showCaption('5: Размещение пешеходных переходов в зоне застройки с шагом не менее 300 м')"
                                 onMouseOut="showCaption('')"/>
 
                                 <area shape="circle"
                                    coords="565,195,25"
-                                   href="/php/index.htm" alt="PHP Tutorial"
+                                   href="#" alt="PHP Tutorial"
                                    target="_self"
                                    onMouseOver="showCaption('4: Ориентация основных пешеходных путей вдоль дорог-дублеров')"
                                    onMouseOut="showCaption('')"/>
 
                                    <area shape="circle"
                                       coords="545,115,25"
-                                      href="/php/index.htm" alt="PHP Tutorial"
+                                      href="#" alt="PHP Tutorial"
                                       target="_self"
                                       onMouseOver="showCaption('7: Устройство остановок общественного транспорта в заездных карманах на дорогах – дублерах')"
                                       onMouseOut="showCaption('')"/>
 
                                 <area shape="circle"
                                    coords="475,250,25"
-                                   href="/php/index.htm" alt="PHP Tutorial"
+                                   href="#" alt="PHP Tutorial"
                                    target="_self"
                                    onMouseOver="showCaption('5: Размещение пешеходных переходов в зоне застройки с шагом не менее 300 м')"
                                    onMouseOut="showCaption('')"/>
@@ -194,7 +194,7 @@
 
              <area shape="circle"
                 coords="95,340,25"
-                href="/php/index.htm" alt="PHP Tutorial"
+                href="#" alt="PHP Tutorial"
                 target="_self"
                 onMouseOver="showCaption('9: Устройство многорядного озеленения вдоль проезжей части')"
                 onMouseOut="showCaption('')"/>
@@ -303,6 +303,21 @@ var conf2 = {
   }
 }
 
+var marker = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {
+            "description": "<div class=\"marker-title\">Make it Mount Pleasant</div><p><a href=\"http://www.mtpleasantdc.com/makeitmtpleasant\" target=\"_blank\" title=\"Opens in a new window\">Make it Mount Pleasant</a> is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>",
+            "marker-symbol": "theatre"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [37.625224, 55.744537]
+        }
+    }]
+  };
+
 function showCaption(text) {
   $("#caption").html(text);
 }
@@ -312,15 +327,17 @@ $("#menu-content").toggle();
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v8',
-    center: [37.625224, 55.744537,],
+    center: [37.625224, 55.744537],
     zoom: 13
 
 });
 
 
 
+
 var menu = document.getElementById('menu-content');
-//menu.toggle();
+$("#menu-content").toggle(false);
+$("#menu-content2").toggle(false);
 
 
 $('#toggle').click(function()
@@ -519,6 +536,19 @@ for(key in conf2) {
         "filter": ["==", "rd_name", ""]
     });
 
+    map.addLayer({
+        "id": "route-click",
+        "type": "line",
+        "source": "streets",
+        "layout": {},
+        "paint": {
+            "line-color": "#f48024",
+            "line-opacity": 0.9,
+            "line-width": 2.5
+        },
+        "filter": ["==", "rd_name", ""]
+    });
+
 
 
     var item = document.getElementById('type');
@@ -530,7 +560,10 @@ for(key in conf2) {
         }, function (err, features) {
             if (!err && features.length) {
               var props = features[0].properties;
-              document.getElementById('panel').innerHTML = '<h3>' + props.rd_name + '</h3>' + '<div><h3> Renovation year: ' + props.year + '</h3></div>' + '<div><h3> PFI class: ' + props.PFI_class + '</h3></div>' + '<div><h3> Length: ' + Math.round(props.fixed) + 'm' + '</h3></div>'  + '<div><h3> Width: '
+
+              map.setFilter('route-click', ["==", "rd_name", props.rd_name]);
+
+              document.getElementById('panel').innerHTML = '<h1>' + props.rd_name + '</h1>' + '<div><h3> Renovation year: ' + props.year + '</h3></div>' + '<div><h3> PFI class: ' + props.PFI_class + '</h3></div>' + '<div><h3> Length: ' + Math.round(props.fixed) + 'm' + '</h3></div>'  + '<div><h3> Width: '
               + props.street_wid + 'm' + '</h3></div>' + '<h3><a href ="#" style = "color:white" id = "diagram" ><span>Стандарт</span></а></h3>' + '<div>' + 'Было' + '</div>' + '<img id = "thumbnailImagePast" src = '+ props.past +' width="200" height="150" alt="Type_1_no_text"/>' + '<div>' + 'Стало' + '</div>' + '<img id = "thumbnailImagePres" src = '+ props.present +' width="200" height="150" alt="Type_1_no_text"/>';
 
               var img = 'https://farm2.staticflickr.com/1536/25347591943_e9c7252b2e_o.png';
@@ -545,6 +578,8 @@ for(key in conf2) {
               });
 
                 //map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
+            } else {
+               map.setFilter('route-click', ["==", "rd_name", ""]);
             }
         });
     });
@@ -572,6 +607,41 @@ for(key in conf2) {
             }
         });
     });
+
+
+  map.addSource("markers", {
+       "type": "geojson",
+       "data": marker
+   });
+
+   // Add a layer showing the markers.
+   /*
+   map.addLayer({
+       "id": "markers-circles",
+       "type": "circle",
+       "source": "markers",
+       "layout": {
+
+       },
+       "paint": {
+         "circle-radius": 30,
+         "circle-color": "#990099"
+       }
+   });
+   */
+
+
+   map.addLayer({
+       "id": "markers",
+       "type": "symbol",
+       "source": "markers",
+       "layout": {
+           "icon-image": "marker-15",
+           "icon-allow-overlap": true
+       }
+   });
+
+
 });
 
 map.on('click', function(e) {
