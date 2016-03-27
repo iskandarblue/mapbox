@@ -13,7 +13,7 @@
 <style>
   body { margin:0; padding:0; font-family: Arial, Sans-Serif }
   #map { position:absolute; top:0; bottom:0; width:100%; }
-  #panel { position: absolute; top: 5px; left: 5px; z-index: 1010101; display: block; width: 400px; height: 700px; overflow-y: auto; background: rgba(114,188,212,0.3); color: white;}
+  #panel { position: absolute; top: 5px; left: 5px; z-index: 1010101; display: block; width: 400px; height: 700px; overflow-y: auto; background: rgba(0,0,0,0.8); color: white;}
   #menu { position:absolute; top:10px; right: 10px;}
   .item { border: 1px solid grey; color: white; background: rgba(0,0,0,0.5); padding: 10px; cursor: pointer;  }
   .item-active { border: 1px solid grey; color: white;  background: rgba(0,128,0,0.5); padding: 10px; cursor: pointer;  }
@@ -643,6 +643,7 @@ for(key in conf2) {
 
 
 });
+
 
 map.on('click', function(e) {
     map.featuresAt(e.point, {
