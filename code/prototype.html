@@ -61,7 +61,7 @@
 		#diagramImage, #divImagePast, #divImagePresent {
 			display: none;
 			position: absolute;
-			top: 100px;
+			top: 150px;
 			left: 50%;
 			margin-left: -400px;
 			margin-top: 0px;
@@ -91,7 +91,7 @@
 		#menu2 {
 			position: absolute;
 			top: 10px;
-			right: 120px
+			right: 100px
 		}
 
 		.item2 {
@@ -120,16 +120,16 @@
 <body>
 <div id='map'></div>
 <div id='menu'>
-	<div id='toggle' style="background-color: rgba(114,188,212,0.3)" class='item'>Street types</div>
+	<div id='toggle' style="background-color: rgba(114,188,212,0.3)" class='item'>ТИП</div>
 
 	<div id='menu-content'></div>
 </div>
 <div id='menu2'>
-	<div id='toggle2' style="background-color: rgba(114,188,212,0.3)" class='item'>Year</div>
+	<div id='toggle2' style="background-color: rgba(114,188,212,0.3)" class='item'>ГОД</div>
 	<div id='menu-content2'></div>
 </div>
 
-<div id='panel'><h3> Click a street!</h3></div>
+<div id='panel'><h3> Нажмите на улицу!</h3></div>
 <div id="diagramImage"></div>
 <div id="divImagePast"></div>
 <div id="divImagePresent"></div>
@@ -616,7 +616,7 @@
 
 		map.on('click', function (e) {
 			map.featuresAt(e.point, {
-				radius: 15,
+				radius: 5,
 				layer: ["m_streets"]
 			}, function (err, features) {
 				if (!err && features.length) {
@@ -624,10 +624,9 @@
 					map.setFilter('route-click', ["==", "rd_name", props.rd_name]);
 					document.getElementById('panel').innerHTML =
 							'<div><h1>' + props.rd_name + '</h1></div>' + '<hr>' +
-							'<div><p> Renovation year: ' + props.year + '</p></div>' +
-							'<div><p> PFI class: ' + props.PFI_class + '</p></div>' +
-							'<div><p> Length: ' + Math.round(props.fixed) + '</p></div>' +
-							'<div><p> Width: ' + props.street_wid + '</p></div>' +
+							'<div><p> Тип улицы согласно стандарту: ' + props.Type + '</p></div>' +
+							'<div><p> Год благоустройства: ' + props.year + '</p></div>' +
+							'<div><p> Протяженность: ' + Math.round(props.fixed) + ' м </p></div>' +
 							'<div><a href="#" id="diagram"><h4>Стандарт</h4></a></div>' +
 							'<div><a href="#" id="hrefImagePast"><div>Было</div><div><img id="thumbnailImagePast" src=' + props.past + ' width="200" height="150" alt="Type_1_no_text"/></div></a></div>' +
 							'<div><a href="#" id="hrefImagePresent"><div>Стало</div><div><img id = "thumbnailImagePres" src = ' + props.present + ' width="200" height="150" alt="Type_1_no_text"/></div></a></div>';
@@ -686,7 +685,7 @@
 
 		map.on('mousemove', function (e) {
 			map.featuresAt(e.point, {
-				radius: 15,
+				radius: 5,
 				layer: ["m_streets"]
 			}, function (err, features) {
 				if (!err && features.length) {
@@ -736,7 +735,7 @@
 
 	map.on('click', function (e) {
 		map.featuresAt(e.point, {
-			radius: 15,
+			radius: 5,
 			layer: ["m_streets"]
 		}, function (err, features) {
 			if (!err && features.length) {
