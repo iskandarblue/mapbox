@@ -616,7 +616,7 @@
 
 		map.on('click', function (e) {
 			map.featuresAt(e.point, {
-				radius: 5,
+				radius: 15,
 				layer: ["m_streets"]
 			}, function (err, features) {
 				if (!err && features.length) {
@@ -686,7 +686,7 @@
 
 		map.on('mousemove', function (e) {
 			map.featuresAt(e.point, {
-				radius: 5,
+				radius: 15,
 				layer: ["m_streets"]
 			}, function (err, features) {
 				if (!err && features.length) {
@@ -736,7 +736,7 @@
 
 	map.on('click', function (e) {
 		map.featuresAt(e.point, {
-			radius: 5,
+			radius: 15,
 			layer: ["m_streets"]
 		}, function (err, features) {
 			if (!err && features.length) {
