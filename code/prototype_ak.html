@@ -119,7 +119,7 @@
 		        position: absolute;
 		        background: rgba(0, 0, 0, 0.5);
 						color: white;
-						left: 35%;
+						left: 45%;
 		        padding: 10px;
 		        font-family: 'Open Sans', sans-serif;
 		    }
@@ -135,12 +135,8 @@
 <div id='menu3'>
     <input id='basic' type='radio' name='rtoggle' value='basic' checked='checked'>
     <label for='basic'>basic</label>
-    <input id='streets' type='radio' name='rtoggle' value='streets'>
-    <label for='streets'>streets</label>
     <input id='emerald' type='radio' name='rtoggle' value='emerald'>
     <label for='emerald'>emerald</label>
-    <input id='bright' type='radio' name='rtoggle' value='bright'>
-    <label for='bright'>bright</label>
     <input id='light' type='radio' name='rtoggle' value='light'>
     <label for='light'>light</label>
     <input id='dark' type='radio' name='rtoggle' value='dark'>
@@ -434,7 +430,7 @@
 		container: 'map',
 		style: 'mapbox://styles/mapbox/dark-v8',
 		center: [37.625224, 55.744537],
-		zoom: 12
+		zoom: 13
 
 	});
 
@@ -641,16 +637,18 @@
 		});
 
 
-
-
 		var item = document.getElementById('type');
 
 		map.on('click', function (e) {
-			map.queryRenderedFeatures(coords, {
-				layers: ["m_streets"]
-			}, function (err, features) {
-				if (features.length > 0) {
-					var coords =  [[(e.point.x-6),(e.point.y-6)],[(e.point.x+6),(e.point.y+6)]];
+
+			//мы делаем массив с кликабельно зоной (она получается 12х12 px)
+			var coords = [[(e.point.x-10),(e.point.y-10)],[(e.point.x+10),(e.point.y+10)]];
+
+			//берём фичи (замени в массиве layers на свои слои которые должны быть кликабельны:
+			var features = map.queryRenderedFeatures(coords, { layers: ['m_streets'] });
+
+			if(features.length > 0) {
+
 					var props = features[0].properties;
 					map.setFilter('route-click', ["==", "rd_name", props.rd_name]);
 					document.getElementById('panel').innerHTML =
@@ -710,20 +708,21 @@
 				} else {
 					map.setFilter('route-click', ["==", "rd_name", ""]);
 				}
-			});
+
 		});
 
 
 		map.on('mousemove', function (e) {
-			map.queryRenderedFeatures(coords, {
-				layers: ["m_streets"]
-			}, function (err, features) {
+
+			var coords = [[(e.point.x-10),(e.point.y-10)],[(e.point.x+10),(e.point.y+10)]];
+			var features = map.queryRenderedFeatures(coords, { layers: ['m_streets'] });
+
 				if (features.length > 0) {
 					map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
 				} else {
 					map.setFilter('route-hover', ['==', 'rd_name', '']);
 				}
-			});
+
 		});
 
 
@@ -764,15 +763,18 @@
 
 
 	map.on('click', function (e) {
-		map.queryRenderedFeatures(coords, {
-			layers: ["m_streets"]
-		}, function (err, features) {
-			if (features.length > 0) {
+
+
+		var coords = [[(e.point.x-10),(e.point.y-10)],[(e.point.x+10),(e.point.y+10)]];
+		var features = map.queryRenderedFeatures(coords, { layers: ['m_streets'] });
+
+
+		if (features.length > 0) {
 				map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
 			} else {
 				map.setFilter('route-hover', ['==', 'rd_name', '']);
 			}
-		});
+
 	});
 
 	var layerList = document.getElementById('menu3');
@@ -787,7 +789,6 @@
 	    inputs[i].onclick = switchLayer;
 	}
 
-map.addControl(new mapboxgl.Navigation({position: 'topright'}));
 	//.addTo(map);
 
 

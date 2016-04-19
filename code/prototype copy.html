@@ -8,8 +8,8 @@
 	<script src="http://www.google.com/jsapi" type="text/javascript"></script>
 	<script type="text/javascript">google.load("jquery", "1.3.2");</script>
 
-	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
-	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet'/>
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.15.0/mapbox-gl.css' rel='stylesheet'/>
 	<style>
 		body {
 			margin: 0;
@@ -641,16 +641,14 @@
 		});
 
 
-
-
 		var item = document.getElementById('type');
 
 		map.on('click', function (e) {
-			map.queryRenderedFeatures(coords, {
-				layers: ["m_streets"]
+			map.featuresAt(e.point, {
+				radius: 5,
+				layer: ["m_streets"]
 			}, function (err, features) {
-				if (features.length > 0) {
-					var coords =  [[(e.point.x-6),(e.point.y-6)],[(e.point.x+6),(e.point.y+6)]];
+				if (!err && features.length) {
 					var props = features[0].properties;
 					map.setFilter('route-click', ["==", "rd_name", props.rd_name]);
 					document.getElementById('panel').innerHTML =
@@ -715,10 +713,11 @@
 
 
 		map.on('mousemove', function (e) {
-			map.queryRenderedFeatures(coords, {
-				layers: ["m_streets"]
+			map.featuresAt(e.point, {
+				radius: 5,
+				layer: ["m_streets"]
 			}, function (err, features) {
-				if (features.length > 0) {
+				if (!err && features.length) {
 					map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
 				} else {
 					map.setFilter('route-hover', ['==', 'rd_name', '']);
@@ -764,10 +763,11 @@
 
 
 	map.on('click', function (e) {
-		map.queryRenderedFeatures(coords, {
-			layers: ["m_streets"]
+		map.featuresAt(e.point, {
+			radius: 5,
+			layer: ["m_streets"]
 		}, function (err, features) {
-			if (features.length > 0) {
+			if (!err && features.length) {
 				map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
 			} else {
 				map.setFilter('route-hover', ['==', 'rd_name', '']);
