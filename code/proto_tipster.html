@@ -113,41 +113,12 @@
 		#diagram > h4, #diagram, #hrefImagePresent, #hrefImagePast {
 			color: white;
 		}
-
-
-		#menu3 {
-		        position: absolute;
-		        background: rgba(0, 0, 0, 0.5);
-						color: white;
-						left: 40%;
-		        padding: 10px;
-		        font-family: 'Open Sans', sans-serif;
-		    }
-
-
-
 	</style>
 </head>
 
 
 <body>
 <div id='map'></div>
-<div id='menu3'>
-    <input id='basic' type='radio' name='rtoggle' value='basic' checked='checked'>
-    <label for='basic'>basic</label>
-    <input id='streets' type='radio' name='rtoggle' value='streets'>
-    <label for='streets'>streets</label>
-    <input id='emerald' type='radio' name='rtoggle' value='emerald'>
-    <label for='emerald'>emerald</label>
-    <input id='bright' type='radio' name='rtoggle' value='bright'>
-    <label for='bright'>bright</label>
-    <input id='light' type='radio' name='rtoggle' value='light'>
-    <label for='light'>light</label>
-    <input id='dark' type='radio' name='rtoggle' value='dark'>
-    <label for='dark'>dark</label>
-    <input id='satellite' type='radio' name='rtoggle' value='satellite'>
-    <label for='satellite'>satellite</label>
-</div>
 <div id='menu'>
 	<div id='toggle' style="background-color: rgba(114,188,212,0.3)" class='item'>ТИП</div>
 
@@ -775,17 +746,6 @@
 		});
 	});
 
-	var layerList = document.getElementById('menu3');
-	var inputs = layerList.getElementsByTagName('input');
-
-	function switchLayer(layer) {
-	    var layerId = layer.target.id;
-	    map.setStyle('mapbox://styles/mapbox/' + layerId + '-v8');
-	}
-
-	for (var i = 0; i < inputs.length; i++) {
-	    inputs[i].onclick = switchLayer;
-	}
 
 	//.addTo(map);
 

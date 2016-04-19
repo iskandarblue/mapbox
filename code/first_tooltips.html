@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'/>
+	<title>First Tooltips</title>
+
+<script src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+<script src="jquery.tooltipster.js"></script>
+<link href= 'tooltipster.css' rel = 'stylesheet' type= 'text/css'/>
+
+<script>
+$(document).ready(function(){
+
+$(‘.tooltip’).tooltipster();       
+
+});
+
+</script></head>
+
+<img src= "ohio.jpg" usemap= "mymap"/>   
+
+<map name= "mymap">
+
+
+<area shape="circle" 
+ coords="428,392,100"
+ href="#" 
+ alt= "Headlamp"
+ class = "tooltip"
+ title = "Mustang headlamps"/>
+</map>
+
+
+
+</html>
