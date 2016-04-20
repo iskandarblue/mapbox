@@ -133,7 +133,7 @@
 <body>
 <div id='map'></div>
 <div id='menu3'>
-    <input id='basic' type='radio' name='rtoggle' value='basic' checked='checked'>
+    <input id='basic' type='radio' name='rtoggle' value='basic' >
     <label for='basic'>basic</label>
     <input id='emerald' type='radio' name='rtoggle' value='emerald'>
     <label for='emerald'>emerald</label>
@@ -141,7 +141,7 @@
     <label for='light'>light</label>
     <input id='dark' type='radio' name='rtoggle' value='dark'>
     <label for='dark'>dark</label>
-    <input id='satellite' type='radio' name='rtoggle' value='satellite'>
+    <input id='satellite' type='radio' name='rtoggle' value='satellite' checked='checked' >
     <label for='satellite'>satellite</label>
 </div>
 <div id='menu'>
@@ -428,7 +428,7 @@
 
 	var map = new mapboxgl.Map({
 		container: 'map',
-		style: 'mapbox://styles/mapbox/dark-v8',
+		style: 'mapbox://styles/mapbox/satellite-v8',
 		center: [37.625224, 55.744537],
 		zoom: 13
 
