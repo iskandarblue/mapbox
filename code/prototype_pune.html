@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'/>
+	<title>HTML markers from geoJSON url</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+
+	<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+	<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.css' rel='stylesheet'/>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, Sans-Serif
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		#panel {
+			position: absolute;
+			z-index: 1010101;
+			display: block;
+			width: 270px;
+			overflow-y: auto;
+			background: rgba(0, 0, 0, 0.4);
+			color: white;
+			height: 100%;
+			padding: 0 10px;
+		}
+
+		#menu {
+			position: absolute;
+			top: 1px;
+			right: 10px;
+		}
+
+		.item {
+			border: 1px solid grey;
+			color: white;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 10px;
+			cursor: pointer;
+		}
+
+		.item-active {
+			border: 1px solid grey;
+			color: white;
+			background: rgba(0, 128, 0, 0.5);
+			padding: 10px;
+			cursor: pointer;
+		}
+
+		#diagramImage, #divImagePast, #divImagePresent {
+			display: none;
+			border-style: inset;
+			position: absolute;
+			top: 150px;
+			left: 50%;
+			margin-left: -340px;
+			margin-top: 0px;
+			z-index: 1010101;
+			width: 800px;
+			height: 500px;
+			overflow-y: auto;
+			background: rgba(0, 0, 0, 1);
+			color: white;
+		}
+
+		#diagramImage:after, #divImagePast:after, #divImagePresent:after {
+			content: "";
+			background-image: url("https://cdn1.iconfinder.com/data/icons/nuove/128x128/actions/fileclose.png");
+			display: block;
+			position: absolute;
+			width: 35px;
+			height: 35px;
+			position: absolute;
+			top: 0;
+			z-index: 1500;
+			right: 0;
+			background-size: contain;
+			cursor: pointer;
+		}
+
+		#menu2 {
+			position: absolute;
+			top: 1px;
+			right: 90px
+		}
+
+		.item2 {
+			border: 1px solid grey;
+			color: white;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 10px;
+			cursor: pointer;
+		}
+
+		.item2-active {
+			border: 1px solid grey;
+			color: white;
+			background: rgba(0, 128, 0, 0.5);
+			padding: 10px;
+			cursor: pointer;
+		}
+
+		#diagram > h4, #diagram, #hrefImagePresent, #hrefImagePast {
+			color: white;
+		}
+
+
+		#menu3 {
+		        position: absolute;
+		        background: rgba(0, 0, 0, 0.5);
+						color: white;
+						left: 40%;
+		        padding: 10px;
+		        font-family: 'Open Sans', sans-serif;
+		    }
+
+
+
+	</style>
+</head>
+
+
+<body>
+<div id='map'></div>
+<div id='menu3'>
+    <input id='basic' type='radio' name='rtoggle' value='basic' >
+    <label for='basic'>basic</label>
+    <input id='emerald' type='radio' name='rtoggle' value='emerald'>
+    <label for='emerald'>emerald</label>
+    <input id='light' type='radio' name='rtoggle' value='light'>
+    <label for='light'>light</label>
+    <input id='dark' type='radio' name='rtoggle' value='dark'>
+    <label for='dark'>dark</label>
+    <input id='satellite' type='radio' name='rtoggle' value='satellite' checked='checked'>
+    <label for='satellite'>satellite</label>
+</div>
+<div id='menu'>
+	<div id='toggle' style="background-color: rgba(114,188,212,0.5)" class='item'>cluster</div>
+
+	<div id='menu-content'></div>
+</div>
+<div id='menu2'>
+	<div id='toggle2' style="background-color: rgba(114,188,212,0.5)" class='item'>time</div>
+	<div id='menu-content2'></div>
+</div>
+
+<div id='panel'><h3> Choose an origin</h3></div>
+<div id="diagramImage"></div>
+<div id="divImagePast"></div>
+<div id="divImagePresent"></div>
+
+<!--
+ <map name="imgmap">
+	<area shape="circle"
+		  coords="320,75,25"
+		  href="#" alt=""
+		  target="_self"
+		  onMouseOver="showCaption('7: Устройство остановок общественного транспорта в заездных карманах на дорогах – дублерах')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="240,100,25"
+		  href="#" alt=""
+		  target="_self"
+		  onMouseOver="showCaption('3: Организация крытых велопарков, велобоксов на пересадочных узлах и вблизи велодорожек')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="175,150,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('8: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="175,340,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('13: Регулирование уровня освещения в зависимости от погодных условий.  Установка wi-fi передатчиков на участках с интенсивным пешеходным потоком')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="200,400,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('1: Организация мест отдыха, совмещенных с островками озеленения в транспортно -пересадочных узлах')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="300,425,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('6: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="400,415,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('10: Обустройство озелененной разделительной полосы')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="500,380,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('6: Выделение полос для экспрессного наземного общественного транспорта вдоль дорог-дублеров без обособления')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="620,370,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('11: Устройство крытых переходов в пересадочных узлах общественного транспорта, обогреваемых остановок общественного транспорта, обогреваемых элементов уличной мебели')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="680,425,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('3: Организация крытых велопарков, велобоксов на пересадочных узлах и вблизи велодорожек')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="740,440,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('2: Организация транзитных велокоридоров с сопутствующей инфраструктурой вокруг транспортных узлов')"
+		  onMouseOut="showCaption('')"/>
+
+
+	<area shape="circle"
+		  coords="750,360,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('9: Устройство многорядного озеленения вдоль проезжей части')"
+		  onMouseOut="showCaption('')"/>
+
+
+	<area shape="circle"
+		  coords="525,360,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('12: Обустройство шумозащитных насыпей')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="290,335,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('12: Обустройство шумозащитных насыпей')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="275,235,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('4: Ориентация основных пешеходных путей вдоль дорог-дублеров')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="375,200,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('5: Размещение пешеходных переходов в зоне застройки с шагом не менее 300 м')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="565,195,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('4: Ориентация основных пешеходных путей вдоль дорог-дублеров')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="545,115,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('7: Устройство остановок общественного транспорта в заездных карманах на дорогах – дублерах')"
+		  onMouseOut="showCaption('')"/>
+
+	<area shape="circle"
+		  coords="475,250,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('5: Размещение пешеходных переходов в зоне застройки с шагом не менее 300 м')"
+		  onMouseOut="showCaption('')"/>
+
+
+	<area shape="circle"
+		  coords="95,340,25"
+		  href="#" alt="PHP Tutorial"
+		  target="_self"
+		  onMouseOver="showCaption('9: Устройство многорядного озеленения вдоль проезжей части')"
+		  onMouseOut="showCaption('')"/>
+
+</map>
+
+-->
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpbHIxMXA3ejAwNWl2Zmx5aXl2MzRhbG4ifQ.qsQjbbm1A71QzVg8OcR7rQ';
+	var conf = {
+		type1: {
+			id: 'cluster1',
+			label: 'cluster 1',
+			filter: '1',
+			pointColor: '#2EFE64'
+		},
+		type2: {
+			id: 'cluster2',
+			label: 'cluster 2',
+			filter: '2',
+			pointColor: '#ff99ff'
+		},
+		type3: {
+			id: 'cluster3',
+			label: 'cluster 3',
+			filter: '3',
+			pointColor: '#FA8258'
+		},
+		type4: {
+			id: 'cluster4',
+			label: 'cluster 4',
+			filter: '4',
+			pointColor: '#FF0080'
+		},
+		type5: {
+			id: 'cluster5',
+			label: 'cluster 5',
+			filter: '5',
+			pointColor: '#08f'
+		}
+	}
+
+	var conf2 = {
+		type1: {
+			id: '12',
+			label: '12',
+			filter: '12:00',
+			pointColor: '#2EFE64'
+		},
+		type2: {
+			id: '19',
+			label: '19',
+			filter: '19:00',
+			pointColor: '#ff99ff'
+		}
+	}
+
+	function showCaption(text) {
+		$("#caption").html(text);
+	}
+
+	$("#menu-content").toggle();
+
+	var map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/satellite-v8',
+		center: [73.8567, 18.5204],
+		zoom: 13
+
+	});
+
+
+	var menu = document.getElementById('menu-content');
+	$("#menu-content").toggle(false);
+	$("#menu-content2").toggle(false);
+
+
+	$('#toggle').click(function () {
+		$("#menu-content").toggle();
+	});
+
+
+	var menu2 = document.getElementById('menu-content2');
+	//menu.toggle();
+
+
+	$('#toggle2').click(function () {
+		$("#menu-content2").toggle();
+	});
+
+
+	map.on('style.load', function () {
+
+		menu2.innerHTML = '';
+		menu.innerHTML = '';
+
+		map.addSource('origins', {
+			type: "geojson",
+			data: "cluster_new.geojson",
+			cluster: true,
+			clusterMaxZoom: 15,
+			clusterRadius: 20
+
+		});
+
+		for (key in conf) {
+			console.log(conf[key]);
+//
+			map.addLayer({
+				"id": conf[key].id,
+				"type": "cirle",
+				"source": "origins",
+				"layout": {
+					"visibility": "none"
+				},
+				"paint": {
+					"circle-color": conf[key].pointColor,
+					"circle-radius": 10,
+					"circle-blur": 1
+				},
+				"filter": ["==", "cluster.2", conf[key].filter]
+			});
+
+			var item = document.createElement("div");
+			item.innerHTML = conf[key].label;
+			item.setAttribute("class", "item");
+			item.setAttribute("id", key);
+
+
+			item.onclick = function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var id = e.target.getAttributeNode("id").value;
+				console.log(id);
+
+
+				var visibility = map.getLayoutProperty(conf[id].id, 'visibility');
+				console.log(visibility);
+				if (visibility == 'visible') {
+					map.setLayoutProperty(conf[id].id, 'visibility', 'none');
+					e.target.className = 'item';
+				} else {
+					map.setLayoutProperty(conf[id].id, 'visibility', 'visible');
+					e.target.className = 'item-active'
+				}
+
+
+			}
+
+
+			menu.appendChild(item);
+
+		}
+
+
+		for (key in conf2) {
+			console.log(conf2[key]);
+//
+			map.addLayer({
+				"id": conf2[key].id,
+				"type": "circle",
+				"source": "origins",
+				"layout": {
+					"visibility": "none"
+				},
+				"paint": {
+					"circle-color": conf2[key].pointColor,
+					"circle-radius": 10,
+					"circle-blur": 1
+				},
+				"filter": ["==", "time", conf2[key].filter]
+			});
+
+			var item2 = document.createElement("div");
+			item2.innerHTML = conf2[key].label;
+			item2.setAttribute("class", "item2");
+			item2.setAttribute("id", key);
+
+
+			item2.onclick = function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var id = e.target.getAttributeNode("id").value;
+				console.log(id);
+
+
+				var visibility = map.getLayoutProperty(conf2[id].id, 'visibility');
+				console.log(visibility);
+				if (visibility == 'visible') {
+					map.setLayoutProperty(conf2[id].id, 'visibility', 'none');
+					e.target.className = 'item2';
+				} else {
+					map.setLayoutProperty(conf2[id].id, 'visibility', 'visible');
+					e.target.className = 'item2-active'
+				}
+
+
+			}
+
+
+			menu2.appendChild(item2);
+
+		}
+
+
+		console.log(map.getStyle());
+
+		/*
+
+		 map.addLayer({
+		 "id": "layer-type6",
+		 "type": "line",
+		 "source": "streets",
+		 "layout": {
+		 "visibility": "visible"
+		 },
+		 "paint": {
+		 "line-color": "#ff99ff",
+		 "line-opacity": 0.6,
+		 "line-width": 2.5
+		 },
+		 "filter": ["==", "Type", "6"]
+		 });
+
+		 map.addLayer({
+		 "id": "layer-type7",
+		 "type": "line",
+		 "source": "streets",
+		 "layout": {
+		 "visibility": "visible"
+		 },
+		 "paint": {
+		 "line-color": "#2EFE64",
+		 "line-opacity": 0.6,
+		 "line-width": 2.5
+		 },
+		 "filter": ["==", "Type", "7"]
+		 });
+
+		 */
+
+		map.addLayer({
+			"id": "m_clusters",
+			"type": "circle",
+			"source": "origins",
+			"interactive": true,
+			"layout": {},
+			"paint": {
+					"circle-color": conf[key].pointColor,
+					"circle-radius": 10,
+					"circle-blur": 1
+			}
+		});
+
+
+		map.addLayer({
+			"id": "route-hover",
+			"type": "circle",
+			"source": "origins",
+			"layout": {},
+			"paint": {
+				"circle-color": "#0000FF",
+				"circle-radius": 10,
+				"circle-blur": 1
+			},
+			"filter": ["==", "originId", ""]
+		});
+
+		map.addLayer({
+			"id": "route-click",
+			"type": "circle",
+			"source": "origins",
+			"layout": {},
+			"paint": {
+				"line-color": "#0000FF",
+				"line-opacity": 0.9,
+				"line-width": 2.5
+			},
+			"filter": ["==", "originId", ""]
+		});
+
+
+		var item = document.getElementById('cluster');
+
+		map.on('click', function (e) {
+
+			//мы делаем массив с кликабельно зоной (она получается 12х12 px)
+			var coords = [[(e.point.x-6),(e.point.y-6)],[(e.point.x+6),(e.point.y+6)]];
+
+			//берём фичи (замени в массиве layers на свои слои которые должны быть кликабельны:
+			var features = map.queryRenderedFeatures(coords, { layers: ['m_clusters'] });
+
+			if(features.length > 0) {
+
+					var props = features[0].properties;
+					map.setFilter('route-click', ["==", "originId", props.originId]);
+					document.getElementById('panel').innerHTML =
+							'<div><p> Avg time to reach hotspots: ' + props.duration + '</p></div>' +
+							'<div><p> Avg Transfers: ' + props.transfers + '</p></div>' +
+							'<div><p> Walking time: ' + props.walking + '</p></div>';
+					//var img = props.image;
+					//$("#image").attr("src", img);
+					//map.setFilter('route-hover', ['==', 'rd_name', features[0].properties.rd_name]);
+
+
+					/*------------------------------------------------------------------------------------------------*/
+					//here we display the diagram images
+					/*------------------------------------------------------------------------------------------------*/
+
+
+					var img = 'https://farm2.staticflickr.com/1536/25347591943_e9c7252b2e_o.png';
+					$("#diagram").click(function () {
+						$("#diagramImage").css("display", "block");
+					});
+					$("#diagramImage")
+							.html("<img id='image' src=" + img + " width ='800' height = '450' usemap = 'imgmap' />")
+							.click(function () {
+								$("#diagramImage").css("display", "none");
+							});
+					$("#diagramImage").append("<div id = 'caption'> </div>");
+
+					/*------------------------------------------------------------------------------------------------*/
+					//here we display the past images
+					/*------------------------------------------------------------------------------------------------*/
+					$("#hrefImagePast").click(function () {
+						$("#divImagePast").css("display", "block");
+					});
+
+					$("#divImagePast")
+							.html("<img id='ImagePast' src=" + props.past + " width ='800' height = '450' alt='Type_1_no_text' />")
+							.click(function () {
+								$("#divImagePast").css("display", "none");
+							});
+
+					/*------------------------------------------------------------------------------------------------*/
+					//here we display the present images
+					/*------------------------------------------------------------------------------------------------*/
+					$("#hrefImagePresent").click(function () {
+						$("#divImagePresent").css("display", "block");
+					});
+
+					$("#divImagePresent")
+							.html("<img id='ImagePresent' src=" + props.present + " width ='800' height = '450' alt='Type_1_no_text' />")
+							.click(function () {
+								$("#divImagePresent").css("display", "none");
+							});
+
+					/*------------------------------------------------------------------------------------------------*/
+				} else {
+					map.setFilter('route-click', ["==", "originId", ""]);
+				}
+
+		});
+
+
+		map.on('mousemove', function (e) {
+
+			var coords = [[(e.point.x-6),(e.point.y-6)],[(e.point.x+6),(e.point.y+6)]];
+			var features = map.queryRenderedFeatures(coords, { layers: ['m_streets'] });
+
+				if (features.length > 0) {
+					map.setFilter('route-hover', ['==', 'originId', features[0].properties.originId]);
+				} else {
+					map.setFilter('route-hover', ['==', 'originId', '']);
+				}
+
+		});
+
+
+		// Add a layer showing the markers.
+		/*
+		 map.addLayer({
+		 "id": "markers-circles",
+		 "type": "circle",
+		 "source": "markers",
+		 "layout": {
+
+		 },
+		 "paint": {
+		 "circle-radius": 30,
+		 "circle-color": "#990099"
+		 }
+		 });
+		 */
+
+	});
+
+
+	map.on('click', function (e) {
+
+
+		var coords = [[(e.point.x-6),(e.point.y-6)],[(e.point.x+6),(e.point.y+6)]];
+		var features = map.queryRenderedFeatures(coords, { layers: ['m_clusters'] });
+
+
+		if (features.length > 0) {
+				map.setFilter('route-hover', ['==', 'originId', features[0].properties.originId]);
+			} else {
+				map.setFilter('route-hover', ['==', 'originId', '']);
+			}
+
+	});
+
+	var layerList = document.getElementById('menu3');
+	var inputs = layerList.getElementsByTagName('input');
+
+	function switchLayer(layer) {
+	    var layerId = layer.target.id;
+	    map.setStyle('mapbox://styles/mapbox/' + layerId + '-v8');
+	}
+
+	for (var i = 0; i < inputs.length; i++) {
+	    inputs[i].onclick = switchLayer;
+	}
+
+	//.addTo(map);
+
+
+</script>
+</body>
+</html>
