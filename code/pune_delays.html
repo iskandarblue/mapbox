@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+.map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 25%;
+    opacity: 0.95;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.map-overlay h2 {
+    line-height: 24px;
+    display: block;
+    margin: 0 0 10px;
+}
+
+.map-overlay .legend .bar {
+    height: 10px;
+    display: inline-block;
+}
+
+.map-overlay input {
+    background-color: transparent;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    cursor: ew-resize;
+}
+</style>
+
+<div id='map'></div>
+
+<div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+        <h2>Pune delays </h2>
+        <h3>Changes in total duration to hotspots</h3>
+        <label id='interval'></label>
+        <input id='slider' type='range' min='0' max='9' step='1' value='0' />
+    </div>
+    <div class='map-overlay-inner'>
+        <div id='legend' class='legend'>
+            <div>Minutes (m)</div>
+        </div>
+    </div>
+</div>
+
+<script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    center: [73.8567, 18.5204],
+    zoom: 12
+});
+
+var popup = new mapboxgl.Popup({
+    closeOnClick: false,
+    closeButton: false
+});
+
+var legend = document.getElementById('legend');
+var intervalLabel = document.getElementById('interval');
+
+// Will contain the layers we wish to interact with on
+// during map mouseover and click events.
+var layerIDs = [];
+
+var timeDelays = [
+    [200000, '#7F3121'],
+    [100000, '#913C23'],
+    [50000, '#A24724'],
+    [25000, '#B35424'],
+    [10000, '#C46222'],
+    [5000, '#D37120'],
+    [2500, '#E2801B'],
+    [100, '#EF9014'],
+    [50, '#FCA107']
+];
+
+var intervals = [
+    "630", //06:30
+    "830",
+    '930',
+    '1030',
+    '1130',
+    '1600', //16:00
+    '1800',
+    '1900',
+    '2000',
+    '2100'
+];
+
+function filterBy(interval, tdelay, index) {
+    // Clear the popup if displayed.
+    popup.remove();
+
+    var filters = [
+        "all",
+        ["==", "interval", interval],
+        [">=", "tdelay", tdelay[0]]
+    ];
+
+    if (index !== 0) filters.push(["<", "tdelay", timeDelays[index - 1][0]]);
+    map.setFilter('circle-' + index, filters);
+    map.setFilter('label-' + index, filters);
+
+    // Set the label to the interval name
+    intervalLabel.textContent = interval;
+}
+
+
+map.on('load', function() {
+
+        map.addSource('delays', {
+            'type': 'geojson',
+            'data': '/data/hotspot_ints.geojson'
+        });
+
+        // Apply layer styles
+        timeDelays.forEach(function(tdelay, i) {
+            var layerID = 'circle-' + i;
+            layerIDs.push(layerID);
+
+            map.addLayer({
+                "id": layerID,
+                "type": "circle",
+                "source": "delays",
+                "paint": {
+                    "circle-color": tdelay[1],
+                    "circle-opacity": 0.75,
+                    "circle-radius": Math.sqrt(tdelay[0]/10)
+                }
+            });
+
+            map.addLayer({
+                "id": "label-" + i,
+                "type": "symbol",
+                "source": "delays",
+                "layout": {
+                    "text-field": "{tdelay} m",
+                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+                    "text-size": 12
+                },
+                "paint": {
+                    "text-color": "#FFF8DC"
+                }
+            });
+
+            // Set filter to first interval in list +
+            // timeDelay rating. 0 = '630' e.g. 06:30
+            filterBy(parseInt(intervals[0]), tdelay, i);
+
+            // Add legend bar
+            var bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.title = timeDelays[i][0];
+            bar.style.width = 100 / timeDelays.length + '%';
+            bar.style.backgroundColor = tdelay[1];
+            legend.insertBefore(bar, legend.firstChild);
+        });
+
+
+        document.getElementById('slider').addEventListener('input', function(e) {
+            var interval = parseInt(e.target.value, 10);
+
+            timeDelays.forEach(function(tdelay, i) {
+
+                filterBy(parseInt(intervals[interval]), tdelay, i);
+            });
+
+        });
+
+        map.on('mousemove', function(e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: layerIDs });
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+        });
+
+        map.on('click', function(e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: layerIDs });
+            if (!features.length) {
+                popup.remove();
+                return;
+            }
+
+            var feature = features[0];
+
+            var link = document.createElement('a');
+            link.textContent = feature.properties.name;
+
+            // Use wrapped coordinates to ensure longitude is within (180, -180)
+            var coords = feature.geometry.coordinates;
+            var ll = new mapboxgl.LngLat(coords[0], coords[1]);
+            var wrapped = ll.wrap();
+
+            // Center the map to its point.
+            map.flyTo({ center: wrapped });
+            popup.setLngLat(wrapped)
+                .setHTML(link.outerHTML)
+                .addTo(map);
+        });
+    });
+</script>
+
+</body>
+</html>
