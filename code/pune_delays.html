@@ -9,11 +9,24 @@
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
+        #panel {
+    			position: absolute;
+    			z-index: 1010101;
+    			display: block;
+    			width: 400px;
+    			overflow-y: auto;
+    			background: rgba(0, 0, 0, 0.9);
+    			color: white;
+    			height: 20%;
+    			padding: 0 10px;
+    		}
+
     </style>
 </head>
 <body>
 
 <style>
+
 .map-overlay {
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     position: absolute;
