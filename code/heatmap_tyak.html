@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        * { font-family: Arial, sans-serif; }
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+
+
+        #legend { z-index: 101010; padding: 10px; position: absolute; text-align: center;
+          color: #eee; bottom: 20px; left: 50%; margin-left: -150px; width: 300px; background: rgba(0,0,0,0.75); }
+        #first { background: green; }
+        #second { background: orange; }
+        #third { background: red; }
+        #fourth {background: #8B0000;}
+
+        .items { text-align: center; }
+        .item { display: inline-block; }
+        .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+        .label { display: inline-block; }
+        .caption { line-height: 20px; text-align: center; }
+
+        #menu {
+               background: #fff;
+               position: absolute;
+               z-index: 1;
+               top: 10px;
+               right: 10px;
+               border-radius: 3px;
+               width: 120px;
+               border: 1px solid rgba(0,0,0,0.4);
+               font-family: 'Open Sans', sans-serif;
+           }
+
+           #menu a {
+               font-size: 13px;
+               color: #404040;
+               display: block;
+               margin: 0;
+               padding: 0;
+               padding: 10px;
+               text-decoration: none;
+               border-bottom: 1px solid rgba(0,0,0,0.25);
+               text-align: center;
+           }
+
+           #menu a:last-child {
+               border: none;
+           }
+
+           #menu a:hover {
+               background-color: #f8f8f8;
+               color: #404040;
+           }
+
+           #menu a.active {
+               background-color: #3887be;
+               color: #ffffff;
+           }
+
+           #menu a.active:hover {
+               background: #3074a4;
+           }
+
+    </style>
+</head>
+<body>
+
+  <nav id="menu"></nav>
+
+  <div id='legend'>
+    <div class='items'>
+      <div class='item'><div class='bullet' id='first'></div><div class='label'> more than 0</div></div>
+      <div class='item'><div class='bullet' id='second'></div><div class='label'> more than 20 </div></div>
+      <div class='item'><div class='bullet' id='third'></div><div class='label'> more than 200 </div></div>
+      <div class='item'><div class='bullet' id='fourth'></div><div class='label'> more than 2000 </div></div>
+    </div>
+    <div class='caption'>Instagram posts (31.08.2015 - 01.05.2015) </div>
+    </div>
+
+<div id='map'></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/bright-v9',
+    center: [37.759149, 55.664170],
+    zoom: 12
+});
+
+map.on('load', function() {
+
+    // Add a new source from our GeoJSON data and set the
+    // 'cluster' option to true.
+    map.addSource("instagram", {
+        type: "geojson",
+        // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes
+        // from 12/22/15 to 1/21/16 as logged by USGS' Earthquake hazards program.
+        data: "insta.geojson",
+        cluster: true,
+        clusterMaxZoom: 16, // Max zoom to cluster points on
+        clusterRadius: 20 // Use small cluster radius for the heatmap look
+    });
+
+    map.addSource("contours", {
+        type: "geojson",
+        data: "inst_contour.geojson"
+    });
+
+    // Use the earthquakes source to create four layers:
+    // three for each cluster category, and one for unclustered points
+
+    // Each point range gets a different fill color.
+    var layers = [
+        [0, 'green'],
+        [20, 'orange'],
+        [200, 'red'],
+        [2000,'#8B0000']
+    ];
+
+    layers.forEach(function (layer, i) {
+        map.addLayer({
+            "id": "cluster-" + i,
+            "type": "circle",
+            "source": "instagram",
+            "paint": {
+                "circle-color": layer[1],
+                "circle-opacity": 0.9,
+                "circle-radius": 70,
+                "circle-blur": 1.0 // blur the circles to get a heatmap look
+            },
+            "filter": i === layers.length - 1 ?
+                [">=", "point_count", layer[0]] :
+                ["all",
+                    [">=", "point_count", layer[0]],
+                    ["<", "point_count", layers[i + 1][0]]]
+        }, 'waterway-label');
+    });
+
+    map.addLayer({
+        "id": "unclustered-points",
+        "type": "circle",
+        "source": "instagram",
+        "paint": {
+            "circle-color": 'rgba(0,255,0,0.5)',
+            "circle-radius": 20,
+            "circle-blur": 1
+        },
+        "filter": ["!=", "cluster", true]
+    }, 'waterway-label');
+
+  map.addLayer({
+      "id": "contours",
+      "type": "line",
+      "source": "contours",
+      'paint': {
+          'line-color': '#802A00',
+          'line-width': 0.8,
+          'line-opacity': 0.7
+        }
+  });
+
+addLayer('Contours', 'contours');
+
+function addLayer(name, id) {
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = 'active';
+    link.textContent = name;
+
+    link.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var visibility = map.getLayoutProperty(id, 'visibility');
+
+        if (visibility === 'visible') {
+            map.setLayoutProperty(id, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(id, 'visibility', 'visible');
+        }
+    };
+
+    var layers = document.getElementById('menu');
+    layers.appendChild(link);
+}
+  });
+
+
+</script>
+
+</body>
+</html>
