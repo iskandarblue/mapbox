@@ -56,15 +56,18 @@
            #menu a:hover {
                background-color: #f8f8f8;
                color: #404040;
+               opacity: 0.5;
            }
 
            #menu a.active {
                background-color: #3887be;
                color: #ffffff;
+               opacity: 0.5;
            }
 
            #menu a.active:hover {
                background: #3074a4;
+               opacity: 0.5;
            }
 
     </style>
@@ -89,7 +92,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/bright-v9',
+    style: 'mapbox://styles/mapbox/dark-v9',
     center: [37.759149, 55.664170],
     zoom: 12
 });
