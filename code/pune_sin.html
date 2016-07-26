@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+
+        #panel {
+    			position: absolute;
+    			z-index: 1010101;
+    			display: block;
+    			width: 400px;
+    			overflow-y: auto;
+    			background: rgba(0, 0, 0, 0.9);
+    			color: white;
+    			height: 20%;
+    			padding: 0 10px;
+    		}
+
+    </style>
+</head>
+<body>
+
+<style>
+
+.map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 25%;
+    opacity: 0.95;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.map-overlay h2 {
+    line-height: 24px;
+    display: block;
+    margin: 0 0 10px;
+}
+
+.map-overlay .legend .bar {
+    height: 10px;
+    display: inline-block;
+}
+
+.map-overlay input {
+    background-color: transparent;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    cursor: ew-resize;
+}
+</style>
+
+<div id='map'></div>
+
+
+<div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+        <h2>Pune sinuosity </h2>
+        <h3>Complexity compared to least sinuous interval</h3>
+        <label id='interval'></label>
+        <input id='slider' type='range' min='0' max='10' step='1' value='0' />
+    </div>
+    <div class='map-overlay-inner'>
+        <div id='legend' class='legend'>
+            <div>Max Sinuosity (maxP) - Current Sinuosity (P) </div>
+        </div>
+    </div>
+</div>
+
+<script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    center: [73.8567, 18.5204],
+    zoom: 11
+});
+
+var popup = new mapboxgl.Popup({
+    closeOnClick: false,
+    closeButton: false
+});
+
+var legend = document.getElementById('legend');
+var intervalLabel = document.getElementById('interval');
+
+// Will contain the layers we wish to interact with on
+// during map mouseover and click events.
+var layerIDs = [];
+
+var timeDelays = [
+    [.083,  '#7F3121'],
+    [.0515, '#913C23'],
+    [.0345, '#A24724'],
+    [.0235, '#B35424'],
+    [.0145, '#C46222'],
+    [.0085, '#D37120'],
+    [.0045, '#E2801B'],
+    [.0015, '#EF9014'],
+    [.00000, '#FCA107']
+];
+
+var intervals = [
+    "630", //06:30
+    "830",
+    '930',
+    '1030',
+    '1130',
+    '160', //16:00
+    '180',
+    '190',
+    '200',
+    '2100',
+    '0'
+];
+
+function filterBy(interval, sin, index) {
+    // Clear the popup if displayed.
+    popup.remove();
+
+    var filters = [
+        "all",
+        ["==", "interval", interval],
+        [">=", "sin", sin[0]]
+    ];
+
+    if (index !== 0) filters.push(["<", "sin", timeDelays[index - 1][0]]);
+    map.setFilter('circle-' + index, filters);
+    map.setFilter('label-' + index, filters);
+
+    // Set the label to the interval name
+    intervalLabel.textContent = interval;
+}
+
+
+map.on('load', function() {
+
+        map.addSource('sin', {
+            'type': 'geojson',
+            'data': 'diffs.geojson'
+        });
+
+        map.addSource('origins', {
+          "type": "geojson",
+          "data": "pune830.geojson"
+        });
+
+        map.addLayer({
+            "id": "origins",
+            "type": "circle",
+            "source": "origins",
+                "layout": {},
+                "paint": {
+                    "circle-color": "#50D050",
+                    "circle-opacity": 0.2,
+                    "circle-radius": 4,
+
+                }
+        });
+
+        // Apply layer styles
+        timeDelays.forEach(function(sin, i) {
+            var layerID = 'circle-' + i;
+            layerIDs.push(layerID);
+
+            map.addLayer({
+                "id": layerID,
+                "type": "circle",
+                "source": "sin",
+                "paint": {
+                    "circle-color": sin[1],
+                    "circle-opacity": 0.65,
+                    "circle-radius": sin[0]*1000,
+                }
+            });
+
+            map.addLayer({
+                "id": "label-" + i,
+                "type": "symbol",
+                "source": "sin",
+                "layout": {
+                    "text-field": "{sin} ",
+                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+                    "text-size": 12
+                },
+                "paint": {
+                    "text-color": "#FFF8DC"
+                }
+            });
+
+            // Set filter to first interval in list +
+            // timeDelay rating. 0 = '630' e.g. 06:30
+            filterBy(parseInt(intervals[0]), sin, i);
+
+            // Add legend bar
+            var bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.title = timeDelays[i][0];
+            bar.style.width = 100 / timeDelays.length + '%';
+            bar.style.backgroundColor = sin[1];
+            legend.insertBefore(bar, legend.firstChild);
+        });
+
+
+        document.getElementById('slider').addEventListener('input', function(e) {
+            var interval = parseInt(e.target.value, 10);
+
+            timeDelays.forEach(function(sin, i) {
+
+                filterBy(parseInt(intervals[interval]), sin, i);
+            });
+
+        });
+
+        map.on('mousemove', function(e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: layerIDs });
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+        });
+
+        map.on('click', function(e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: layerIDs });
+            if (!features.length) {
+                popup.remove();
+                return;
+            }
+
+            var feature = features[0];
+
+            var link = document.createElement('a');
+            link.textContent = feature.properties.destination;
+
+            // Use wrapped coordinates to ensure longitude is within (180, -180)
+            var coords = feature.geometry.coordinates;
+            var ll = new mapboxgl.LngLat(coords[0], coords[1]);
+            var wrapped = ll.wrap();
+
+            // Center the map to its point.
+            map.flyTo({ center: wrapped });
+            popup.setLngLat(wrapped)
+                .setHTML(link.outerHTML)
+                .addTo(map);
+        });
+    });
+</script>
+
+</body>
+</html>
