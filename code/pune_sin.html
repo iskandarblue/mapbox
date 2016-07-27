@@ -107,14 +107,14 @@ var intervalLabel = document.getElementById('interval');
 var layerIDs = [];
 
 var timeDelays = [
-    [.083,  '#7F3121'],
-    [.0515, '#913C23'],
-    [.0345, '#A24724'],
-    [.0235, '#B35424'],
-    [.0145, '#C46222'],
-    [.0085, '#D37120'],
-    [.0045, '#E2801B'],
-    [.0015, '#EF9014'],
+    [.083,  '#FCA107'],
+    [.0515, '#FCA107'],
+    [.0345, '#FCA107'],
+    [.0235, '#FCA107'],
+    [.0145, '#FCA107'],
+    [.0085, '#FCA107'],
+    [.0045, '#FCA107'],
+    [.0015, '#FCA107'],
     [.00000, '#FCA107']
 ];
 
@@ -160,18 +160,17 @@ map.on('load', function() {
 
         map.addSource('origins', {
           "type": "geojson",
-          "data": "pune830.geojson"
+          "data": "convex.geojson"
         });
 
         map.addLayer({
             "id": "origins",
-            "type": "circle",
+            "type": "fill",
             "source": "origins",
                 "layout": {},
                 "paint": {
-                    "circle-color": "#50D050",
-                    "circle-opacity": 0.2,
-                    "circle-radius": 4,
+                    "fill-color": "#00FF00",
+                    "fill-opacity": 0.2,
 
                 }
         });
@@ -188,7 +187,7 @@ map.on('load', function() {
                 "paint": {
                     "circle-color": sin[1],
                     "circle-opacity": 0.65,
-                    "circle-radius": sin[0]*1000,
+                    "circle-radius": Math.sqrt(sin[0]*10000)
                 }
             });
 
