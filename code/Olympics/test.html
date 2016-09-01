@@ -18,7 +18,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9',
+    style: 'mapbox://styles/mapbox/dark-v9',
     center: [-100.486052, 37.830348],
     zoom: 2
 });
@@ -36,7 +36,7 @@ map.on('load', function () {
         "layout": {},
         "paint": {
             "fill-color": "#627BC1",
-            "fill-opacity": 0.5
+            "fill-opacity": 0.2
         }
     });
 
@@ -84,12 +84,12 @@ map.on('load', function () {
 
       var medals = features[0].properties.total_won;
 
-      var relatedFeatures = map.queryRenderedFeatures('state-fills', {
+      var relatedFeatures = map.querySourceFeatures('states', {
           filter: ['==', 'total_won', medals]
       });
 
           console.log(medals);
-          console.log(relatedFeatures.length)
+          console.log(relatedFeatures)
 
 
     });
