@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        body { margin:0; padding:0; font-family:'Open Sans', sans-serif}
+
+
+        .map-overlay {
+            font-family:'Open Sans', sans-serif;
+            color: white;
+            position: absolute;
+            width: 100px;
+            bottom: 275px;
+            right: 0px;
+            padding: 5px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid lightgrey;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay label {
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay input {
+            background-color: transparent;
+            display: inline-block;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            cursor: ew-resize;
+        }
+
+        #townhouses { background: #2EFE64; }
+        #apartments { background: #ff99ff; }
+        #vacant_lots { background: #808080; }
+        #commercial { background: #FF0080; }
+        #commercial_imp { background: #08f; }
+        #industrial_imp { background: #FFFF00; }
+        #elec_comp { background: #FE2E2E; }
+        #rail_corr { background: #E9A443; }
+
+        .items { text-align: center; }
+        .item { display: inline-block; }
+        .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+        .label { display: inline-block; }
+        .caption { line-height: 20px; text-align: center; }
+
+        #legend { z-index: 101010; padding: 5px; position: fixed; text-align: center;
+          color: #eee; bottom: 20px; align: center; width: 1250px; background: rgba(0,0,0,0.1);
+          font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
+        #divContainer {position: absolute; border:dashed 1px #CCC;width:120px;height:120px;padding:5px;margin:5px;font:13px Arial;cursor:move;float:left;}
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #panel {
+    			position: absolute;
+    			z-index: 1010101;
+    			display: block;
+    			width: 400px;
+    			overflow-y: auto;
+    			background: rgba(0, 0, 0, 0.9);
+    			color: white;
+          height: 35%;
+          top: 5px;
+          left: 5px;
+    			padding: 0 10px;
+          border: 2px solid lightgrey;
+          border-radius: 5px;
+          font-family: 'Open Sans', sans-serif
+    		}
+
+        #menu {
+          position: absolute;
+          overflow-y: auto;
+          height: 35%;
+          top: 5px;
+          align: right;
+          right: 5px;
+          border: 2px solid lightgrey;
+          border-radius: 5px;
+          font-family: 'Open Sans', sans-serif
+        }
+
+        .item {
+          border: 1px solid grey;
+          color: white;
+          background: rgba(0, 0, 0, 0.9);
+          padding: 5px;
+          cursor: pointer;
+        }
+
+        .item-active {
+          border: 1px solid grey;
+          color: white;
+          background: rgba(0, 128, 0, 0.5);
+          padding: 5px;
+          cursor: pointer;
+        }
+
+
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    $(document).ready(function() {
+       $(function() { $('#divContainer').draggable(); });
+     });
+    </script>
+    </head>
+    <body>
+
+<div id='map'></div>
+
+<div id = 'panel'></div>
+
+<div id='menu'>
+	<div id='toggle' style="background-color: rgba(0, 0, 0, 0.9)" class='item'>
+    <p><input id='basic' type='radio' name='rtoggle' value='basic' '>
+    <label for='basic'>Basic</label></p>
+    <p><input id='emerald' type='radio' name='rtoggle' value='emerald'>
+    <label for='emerald'>Emerald</label></p>
+    <p><input id='light' type='radio' name='rtoggle' value='light'>
+    <label for='light'>Light</label></p>
+    <p><input id='dark' type='radio' name='rtoggle' value='dark' checked='checked>
+    <label for='dark'>Dark</label></p>
+    <p><input id='satellite' type='radio' name='rtoggle' value='satellite'>
+    <label for='satellite'>Satellite</label></p></div>
+</div>
+
+  <div id='legend'>
+  <div class='items'>
+    <div class='item'><div class='bullet' id='townhouses'></div><div class='label'>Townhouses</div></div>
+    <div class='item'><div class='bullet' id='apartments'></div><div class='label'>Apartments</div></div>
+    <div class='item'><div class='bullet' id='vacant_lots'></div><div class='label'>Vacant Lots</div></div>
+    <div class='item'><div class='bullet' id='commercial'></div><div class='label'>Commercial</div></div>
+    <div class='item'><div class='bullet' id='commercial_imp'></div><div class='label'>Commercial Improvements</div></div>
+    <div class='item'><div class='bullet' id='industrial_imp'></div><div class='label'>Industrial Improvements</div></div>
+    <div class='item'><div class='bullet' id='elec_comp'></div><div class='label'>Electric</div></div>
+    <div class='item'><div class='bullet' id='rail_corr'></div><div class='label'>Railroad</div></div>
+  </div>
+</div>
+
+	<div id='menu-content'></div>
+
+  <div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+        <label>Opacity: <span id='slider-value'>100%</span></label>
+        <input id='slider' type='range' min='0' max='100' step='0' value='100' />
+    </div>
+</div>
+
+
+<!--  <div id='divContainer' style="background-color: rgba(0, 0, 0, 0.9)"> Legend </div> -->
+
+<script>
+
+var conf = {
+		type1: {
+			id: 'type1',
+			label: 'SFR - TOWNHOUSES',
+			filter: 'A12',
+			lineColor: '#2EFE64'
+		},
+		type2: {
+			id: 'type2',
+			label: 'MFR - APARTMENTS',
+			filter: 'B11',
+			lineColor: '#ff99ff'
+		},
+		type3: {
+			id: 'type3',
+			label: 'SFR - VACANT LOTS',
+			filter: 'C11',
+			lineColor: '#808080'
+		},
+		type4: {
+			id: 'type4',
+			label: 'COMMERCIAL',
+			filter: 'C12',
+			lineColor: '#FF0080'
+		},
+		type5: {
+			id: 'type5',
+			label: 'COMMERCIAL IMPROVEMENTS',
+			filter: 'F10',
+			lineColor: '#08f'
+		},
+		type6: {
+			id: 'type6',
+			label: 'INDUSTRIAL IMPROVEMENTS',
+			filter: 'F20',
+			lineColor: '#FFFF00'
+		},
+		type7: {
+			id: 'type7',
+			label: 'ELECTRIC COMPANIES',
+			filter: 'J30',
+			lineColor: '#FE2E2E'
+		},
+		type8: {
+			id: 'type8',
+			label: 'RAILROAD CORRIDOR',
+			filter: 'J51',
+			lineColor: '#E9A443'
+		},
+    type9: {
+			id: 'type9',
+			label: 'undefined',
+			filter: null,
+			lineColor: '#a9a9a9'
+		}
+};
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    center: [-96.80011, 32.7817035],
+    zoom: 14.5
+});
+
+var slider = document.getElementById('slider');
+var sliderValue = document.getElementById('slider-value');
+
+map.on('style.load', function () {
+    // Add a GeoJSON source containing the state polygons.
+    map.addSource('parcels', {
+        'type': 'geojson',
+        'data': '../data/dal_center.geojson'
+    });
+
+        map.addLayer({
+            'id': 'fills',
+            'type': 'fill',
+            'source': 'parcels',
+            'layout': {
+              "visibility" : "visible"
+            },
+            'paint': {
+                'fill-color': {
+                  property: 'SPTBCODE',
+                  type: 'categorical',
+                  stops: [['A12', '#2EFE64'], ['B11', '#ff99ff'],['C11', '#808080'],['C12', '#FF0080'],['F10', '#08f'],['F20', '#FFFF00'],['J30', '#FE2E2E'],['J51', '#E9A443'], ]
+                },
+                'fill-outline-color': 'rgba(0, 0, 0, 1.0)',
+                'fill-opacity':1.0
+            },
+        },'water');
+
+    map.addLayer({
+        'id': 'parcel-hover',
+        'type': 'fill',
+        'source': 'parcels',
+        'paint': {
+            'fill-color': 'rgba(0, 0, 0, 1.0)',
+            'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+        },
+      "filter": ["==", "RELKEY", ""]
+    });
+    // Add a layer showing the state polygons.
+
+    map.addLayer({
+        'id': 'parcel-layer',
+        'type': 'fill',
+        'source': 'parcels',
+        'paint': {
+            'fill-color': 'rgba(200, 100, 240, 0.0)',
+            'fill-outline-color': 'rgba(0,0,0, 0.3)'
+        }
+    });
+});
+
+
+// When a click event occurs near a polygon, open a popup at the location of
+// the feature, with description HTML from its properties.
+
+
+// Use the same approach as above to indicate that the symbols are clickable
+// by changing the cursor style to 'pointer'.
+map.on('mousemove', function (e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel-layer'] });
+    map.getCanvas().style.cursor = (features.length) ? 'crosshair' : '';
+});
+
+map.on('click', function (e) {
+    // Use queryRenderedFeatures to get features at a click event's point
+    // Use layer option to avoid getting results from other layers
+    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel-layer'] });
+    // if there are features within the given radius of the click event,
+    // fly to the location of the click event
+    if (features.length) {
+        // Get coordinates from the symbol and center the map on those coordinates
+        map.flyTo({center: e.lngLat});
+        console.log(e.lngLat);
+    }
+
+    if (features.length > 0) {
+        map.setFilter('parcel-hover', ['==', 'RELKEY', features[0].properties.RELKEY]);
+      } else {
+        map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
+      }
+
+
+    if(features.length > 0) {
+
+      	var props = features[0].properties;
+      	map.setFilter('parcel-hover', ["==", "RELKEY", props.RELKEY]);
+      	document.getElementById('panel').innerHTML =
+      	'<div><h3> <u>Address:</u> ' + props.ST_NUM  + '&nbsp' + props.ST_NAME + '&nbsp' + props.ST_TYPE +
+        '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + props.PROP_CL + '</h3></div>' + '<div><h3> <u>Area:</u> '
+        + Math.round(props.area) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ Math.round(props.LAND_VAL) + '</h3></div>';
+
+      				} else {
+      					map.setFilter('parcel-hover', ["==", "RELKEY", ""]);
+      				}
+});
+
+
+var layerList = document.getElementById('menu');
+var inputs = layerList.getElementsByTagName('input');
+
+function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/mapbox/' + layerId + '-v9');
+}
+
+for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+}
+
+slider.addEventListener('input', function(e) {
+        // Adjust the layers opacity. layer here is arbitrary - this could
+        // be another layer name found in your style or a custom layer
+        // added on the fly using `addSource`.
+        map.setPaintProperty('fills', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+        // Value indicator
+        sliderValue.textContent = e.target.value + '%';
+    });
+
+
+
+</script>
+</body>
+</html>
