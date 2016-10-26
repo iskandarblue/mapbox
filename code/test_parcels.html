@@ -11,6 +11,25 @@
     <style>
         body { margin:0; padding:0; font-family:'Open Sans', sans-serif}
 
+        .filter-ctrl {
+            position: absolute;
+            top: 300px;
+            left: 5px;
+            z-index: 1;
+            width: 200px;
+        }
+
+        .filter-ctrl input[type=text] {
+            font-family:'Open Sans', sans-serif;
+            width: 100%;
+            border: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            height: 40px;
+            margin: 0;
+            color: #eee;
+            padding: 5px;
+            border-radius: 3px;
+        }
 
         .map-overlay {
             font-family:'Open Sans', sans-serif;
@@ -123,7 +142,7 @@
 
 <div id='map'></div>
 
-<div id = 'panel'></div>
+<div id = 'panel'>[Choose a parcel]</div>
 
 <div id='menu'>
 	<div id='toggle' style="background-color: rgba(0, 0, 0, 0.9)" class='item'>
@@ -222,6 +241,9 @@ var conf = {
 			lineColor: '#a9a9a9'
 		}
 };
+
+var layerIDs = []; // Will contain a list used to filter against.
+var filterInput = document.getElementById('filter-input');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
 var map = new mapboxgl.Map({
