@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+
+var Tilesplash = require('tilesplash');
+var app = new Tilesplash('postgres://postgres@localhost/dallas');
+
+console.log();
+
+app.layer('dallas', userMiddleware, function(tile, render){
+  render(
+    {
+      pol : 'SELECT ST_AsGeoJSON(wkb_geometry) as the_geom_geojson, dal_center.* FROM dal_center WHERE ST_Intersects(wkb_geometry, !bbox_4326!)'
+    });
+});
+
+app.server.listen(3000);
+
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+
+
+map.on('load', function() {
+    map.addSource('data', {
+        type: 'vector',
+        tiles: ['http://localhost:3000/dal_center/{z}/{x}/{y}.mvt'],
+        "minzoom": 0,
+        "maxzoom": 22
+    });
+    map.addLayer({
+        "id": "polygons",
+        "type": "fill",
+        "source": "data",
+        "source-layer": "pol",
+
+        "paint": {
+            "fill-color": "#3887be"
+        }
+    });
+});
+
+</script>
+
+</body>
+</html>
