@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Solar Panels</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+
+        #_2009 { background: #E50600; }
+        #_2011 { background: #E14900; }
+        #_2012 { background: #DD8A00; }
+        #_2013 { background: #D9C900; }
+        #_2014 { background: #A5D500; }
+        #_2015 { background: #63D200; }
+
+
+        .items { text-align: center; }
+        .item { display: inline-block; }
+        .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+        .label { display: inline-block; }
+        .caption { line-height: 20px; text-align: center; }
+
+        #legend { z-index: 101010; padding: 5px; position: fixed; text-align: center;
+          color: #eee; bottom: 20px; align: center; width: 1250px; background: rgba(0,0,0,0.1);
+          font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
+
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div id='legend'>
+<div class='items'>
+  <div class='item'><div class='bullet' id='_2009'></div><div class='label'>2009</div></div>
+  <div class='item'><div class='bullet' id='_2011'></div><div class='label'>2011</div></div>
+  <div class='item'><div class='bullet' id='_2012'></div><div class='label'>2012</div></div>
+  <div class='item'><div class='bullet' id='_2013'></div><div class='label'>2013</div></div>
+  <div class='item'><div class='bullet' id='_2014'></div><div class='label'>2014</div></div>
+  <div class='item'><div class='bullet' id='_2015'></div><div class='label'>2015</div></div>
+</div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    zoom: 13,
+    center: [-71.1956, 42.5047]
+});
+
+map.on('load', function () {
+    map.addSource('burlington', {
+      'type': 'geojson',
+      'data': '../data/sp.geojson'
+    });
+    map.addLayer({
+        'id': '',
+        'type': 'circle',
+        'source': 'burlington',
+        'paint': {
+            // make circles larger as the user zooms from z12 to z22
+            'circle-radius': {
+                'base': 1.75,
+                'stops': [[12, 6], [22, 180]]
+            },
+            'circle-opacity': 0.5,
+            // color circles by ethnicity, using data-driven styles
+            'circle-color': {
+                property: 'Year',
+                type: 'categorical',
+                stops: [
+                    ['2009', '#E50600'],
+                    ['2011', '#E14900'],
+                    ['2012', '#DD8A00'],
+                    ['2013', '#D9C900'],
+                    ['2014', '#A5D500'],
+                    ['2015', '#63D200']]
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
