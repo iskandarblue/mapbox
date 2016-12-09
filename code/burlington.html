@@ -5,17 +5,17 @@
     <title>Solar Panels</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_y5bjJGdDZl_oxEEJ1EIcbzxp-SaDo7o&callback=initialize">
+    </script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
 
-        #_2009 { background: #E50600; }
-        #_2011 { background: #E14900; }
-        #_2012 { background: #DD8A00; }
-        #_2013 { background: #D9C900; }
-        #_2014 { background: #A5D500; }
-        #_2015 { background: #63D200; }
+        #other { background: #808080; }
+        #christian { background: #ACC4E6; }
+        #muslim { background: #63D200; }
 
 
         .items { text-align: center; }
@@ -28,10 +28,16 @@
           color: #eee; bottom: 20px; align: center; width: 1250px; background: rgba(0,0,0,0.1);
           font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
 
+          #panorama {
+        float: left;
+        height: 100%;
+        width: 45%;}
+
     </style>
 </head>
 <body>
 
+<div id="panorama"></div>
 <div id='map'></div>
 <div id='legend'>
 <div class='items'>
@@ -44,24 +50,25 @@
 </div>
 </div>
 
+
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/dark-v9',
-    zoom: 13,
-    center: [-71.1956, 42.5047]
+    style: 'mapbox://styles/mapbox/outdoors-v9',
+    zoom: 12,
+    center: [50.1802, 50.7264]
 });
 
 map.on('load', function () {
-    map.addSource('burlington', {
+    map.addSource('xrams', {
       'type': 'geojson',
-      'data': '../data/sp.geojson'
+      'data': '../data/all_xrams.geojson'
     });
     map.addLayer({
-        'id': 'burlington',
+        'id': 'all_xrams',
         'type': 'circle',
-        'source': 'burlington',
+        'source': 'xrams',
         'paint': {
             // make circles larger as the user zooms from z12 to z22
             'circle-radius': {
@@ -71,41 +78,45 @@ map.on('load', function () {
             'circle-opacity': 0.5,
             // color circles by ethnicity, using data-driven styles
             'circle-color': {
-                property: 'Year',
+                property: 'religion',
                 type: 'categorical',
                 stops: [
-                    ['2009', '#E50600'],
-                    ['2011', '#E14900'],
-                    ['2012', '#DD8A00'],
-                    ['2013', '#D9C900'],
-                    ['2014', '#A5D500'],
-                    ['2015', '#63D200']]
+                    ['christian', '#ACC4E6'],
+                    ['muslim', '#63D200'],
+                    ['jewish', '#808080'],
+                    ['buddhist', '#808080'],
+                    ['', '#808080']
             }
         }
     });
 });
 
-map.on('click', function (e) {
-    var features = map.queryRenderedFeatures(e.point, { layers: ['burlington'] });
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
+
+map.on('mousemove', function(e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['all_xrams'] });
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
     if (!features.length) {
+        popup.remove();
         return;
     }
 
     var feature = features[0];
 
-    console.log(features);
-
-    var popup = new mapboxgl.Popup()
-        .setLngLat(map.unproject(e.point))
-        .setHTML(feature.properties.Address)
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(feature.geometry.coordinates)
+        .setHTML(feature.properties)
         .addTo(map);
 });
 
-map.on('mousemove', function (e) {
-    var features = map.queryRenderedFeatures(e.point, { layers: ['burlington'] });
-    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
-});
 </script>
+
 
 </body>
 </html>

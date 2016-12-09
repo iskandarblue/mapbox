@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Solar Panels</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+
+        #other { background: #835C3B ; }
+        #christian { background: #ACC4E6; }
+        #muslim { background: #63D200; }
+
+
+        .items { text-align: center; }
+        .item { display: inline-block; }
+        .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+        .label { display: inline-block; }
+        .caption { line-height: 20px; text-align: center; }
+
+        #legend { z-index: 101010; padding: 5px; position: fixed; text-align: center;
+          color: #eee; bottom: 20px; align: center; width: 1250px; background: rgba(0,0,0,0.1);
+          font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
+
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div id='legend'>
+<div class='items'>
+  <div class='item'><div class='bullet' id='muslim'></div><div class='label'>Muslim</div></div>
+  <div class='item'><div class='bullet' id='christian'></div><div class='label'>Christian</div></div>
+  <div class='item'><div class='bullet' id='other'></div><div class='label'>Other</div></div>
+</div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    center: [50.7264,  55.1802],
+    zoom: 7
+
+});
+
+map.on('load', function () {
+    map.addSource('xrams', {
+      'type': 'geojson',
+      'data': '../data/all_xrams.geojson',
+      'cluster': true,
+      'clusterMaxZoom': 7, // Max zoom to cluster points on
+      'clusterRadius': 50
+    });
+
+
+map.addLayer({
+       "id": "unclustered-points",
+       "source": "xrams",
+       "filter": ["!has", "point_count"],
+       "type": 'circle',
+       'paint': {
+           // make circles larger as the user zooms from z12 to z22
+           'circle-radius': {
+               'base': 1.75,
+               'stops': [[12, 6], [22, 180]]
+           },
+           'circle-opacity': 0.7,
+           // color circles by ethnicity, using data-driven styles
+           'circle-color': {
+               property: 'religion',
+               type: 'categorical',
+               stops: [
+                   ['christian', '#ACC4E6'],
+                   ['muslim', '#63D200'],
+                   ['jewish', '#835C3B '],
+                   ['buddhist', '#835C3B '],
+                   ['', '#835C3B ']]
+           }
+       }
+   });
+
+   // Display the earthquake data in three layers, each filtered to a range of
+   // count values. Each range gets a different fill color.
+   var layers = [
+      [100, '#FF5400'],
+      [50, '#FF7F00'],
+       [25, '#FFAA00'],
+       [10, '#FFD400'],
+       [0, '#FFFE00']
+   ];
+
+   layers.forEach(function (layer, i) {
+       map.addLayer({
+           "id": "cluster-" + i,
+           "type": "circle",
+           "source": "xrams",
+           "paint": {
+               "circle-color": layer[1],
+               "circle-radius": 18,
+               "circle-opacity": 0.5
+           },
+           "filter": i === 0 ?
+               [">=", "point_count", layer[0]] :
+               ["all",
+                   [">=", "point_count", layer[0]],
+                   ["<", "point_count", layers[i - 1][0]]]
+       });
+   });
+
+   // Add a layer for the clusters' count labels
+   map.addLayer({
+       "id": "cluster-count",
+       "type": "symbol",
+       "source": "xrams",
+       "paint": {
+           "text-color": '#FFFFFF'
+         },
+       "layout": {
+           "text-field": "{point_count}",
+           "text-font": [
+               "DIN Offc Pro Medium",
+               "Arial Unicode MS Bold"
+           ],
+           "text-size": 12
+       }
+   });
+});
+
+map.on('load', function () {
+    map.addSource('tat', {
+        'type': 'geojson',
+        'data': '../data/tatarstan.geojson'
+    });
+
+    map.addLayer({
+        'id': 'tatarstan',
+        'type': 'fill',
+        'source': 'tat',
+        'layout': {},
+        'paint': {
+            'fill-outline-color': '#088',
+            'fill-opacity': 0.1,
+            'fill-color': '#FFFFFF'
+        }
+    }, 'water');
+});
+
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
+
+map.on('click', function (e) {
+    var cluster_features = map.queryRenderedFeatures(e.point, {
+        layers: [
+            'cluster-0',
+            'cluster-1',
+            'cluster-2',
+            'cluster-3',
+            'cluster-4'
+        ]
+    });
+    var cluster_feature = cluster_features[0];
+    if (cluster_feature && cluster_feature.properties.cluster) {
+        map.jumpTo({
+            center: e.lngLat,
+            zoom: map.getZoom() + 1
+        });
+    }
+});
+
+map.on('mousemove', function(e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['unclustered-points'] });
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+    if (!features.length) {
+        popup.remove();
+        return;
+    }
+
+    var feature = features[0];
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(feature.geometry.coordinates)
+        .setHTML(JSON.stringify(feature.properties, null, 2))
+        .addTo(map);
+});
+</script>
+
+
+</body>
+</html>
