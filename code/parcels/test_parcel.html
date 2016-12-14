@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        body { margin:0; padding:0; }
+        .filter-ctrl {
+            position: absolute;
+            top: 300px;
+            left: 5px;
+            z-index: 1;
+            width: 200px;
+        }
+
+        .filter-ctrl input[type=text] {
+            font-family:'Open Sans', sans-serif;
+            width: 100%;
+            border: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            height: 40px;
+            margin: 0;
+            color: #eee;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .map-overlay {
+            font-family:'Open Sans', sans-serif;
+            color: white;
+            position: absolute;
+            width: 120px;
+            top: 275px;
+            right: 0px;
+            padding: 5px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid lightgrey;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay label {
+            display: block;
+            margin: 0 0 10px;
+        }
+
+        .map-overlay input {
+            background-color: transparent;
+            display: inline-block;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            cursor: ew-resize;
+        }
+        #townhouses { background: #2EFE64; }
+        #apartments { background: #ff99ff; }
+        #vacant_lots { background: #808080; }
+        #commercial { background: #FF0080; }
+        #commercial_imp { background: #08f; }
+        #industrial_imp { background: #FFFF00; }
+        #elec_comp { background: #FE2E2E; }
+        #rail_corr { background: #E9A443; }
+        .items { text-align: center; }
+        .item { display: inline-block; }
+        .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
+        .label { display: inline-block; }
+        .caption { line-height: 20px; text-align: center; }
+        #legend { z-index: 101010; padding: 5px; position: fixed; text-align: center;
+          color: #eee; bottom: 20px; align: center; width: 1250px; background: rgba(0,0,0,0.0);
+          font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
+        #divContainer {position: absolute; border:dashed 1px #CCC;width:120px;height:120px;padding:5px;margin:5px;font:13px Arial;cursor:move;float:left;}
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #panel {
+          position: absolute;
+          z-index: 1010101;
+          display: block;
+          width: 300px;
+          overflow-y: auto;
+          overflow-x: scroll;
+          background: rgba(0, 0, 0, 0.9);
+          color: white;
+          height: 87%;
+          top: 5px;
+          left: 5px;
+          padding: 0 10px;
+          border: 2px solid lightgrey;
+          text-align:left;
+          border-radius: 5px;
+          font-family: 'Open Sans', sans-serif;
+          font-size: 14px;
+          line-height: 1.5em;
+        }
+        #menu {
+            color: rgba(250,250,250, 1);
+            position: absolute;
+            display: inline-block;
+            z-index: 1;
+            top: 55px;
+            right: 10px;
+            border-radius: 5px;
+            border: 2px solid lightgrey;
+            width: 225px;
+            right: 8px;
+            padding: 5px;
+            font-family: 'Open Sans', sans-serif;
+            margin: 5px;
+            text-align: center;
+        }
+
+        #menu a {
+            color: rgba(0,0,0, 1);
+            background: rgba(250,250,250,0.9);
+            margin: 0;
+            padding: 10;
+            border-radius: 5px;
+            padding: 5px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        #menu a:last-child {
+            border: none;
+        }
+
+        #menu a.active {
+            background-color: rgba(0,0,0,0.9);
+            color: #ffffff;
+        }
+
+        #menu a.active:hover {
+            background: rgba(0, 0, 180, 0.9);
+        }
+
+        #styleToggle {
+          position: absolute;
+          overflow-y: auto;
+          height: 35%;
+          top: 100px;
+          align: right;
+          right: 5px;
+          border: 2px solid lightgrey;
+          border-radius: 5px;
+          font-family: 'Open Sans', sans-serif
+        }
+        .item {
+          border: 1px solid grey;
+          color: white;
+          background: rgba(0, 0, 0, 0.9);
+          padding: 5px;
+          cursor: pointer;
+        }
+        .item-active {
+          border: 1px solid grey;
+          color: white;
+          background: rgba(0, 128, 0, 0.5);
+          padding: 5px;
+          cursor: pointer;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    $(document).ready(function() {
+       $(function() { $('#divContainer').draggable(); });
+     });
+    </script>
+    </head>
+    <body>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+
+<div id='map'></div>
+
+<nav id='menu'></nav>
+<div id ='panel'>[Choose a parcel] </div>
+
+<div id='legend'>
+<div class='items'>
+  <div class='item'><div class='bullet' id='townhouses'></div><div class='label'>Townhouses</div></div>
+  <div class='item'><div class='bullet' id='apartments'></div><div class='label'>Apartments</div></div>
+  <div class='item'><div class='bullet' id='vacant_lots'></div><div class='label'>Vacant Lots</div></div>
+  <div class='item'><div class='bullet' id='commercial'></div><div class='label'>Commercial</div></div>
+  <div class='item'><div class='bullet' id='commercial_imp'></div><div class='label'>Commercial Improvements</div></div>
+  <div class='item'><div class='bullet' id='industrial_imp'></div><div class='label'>Industrial Improvements</div></div>
+  <div class='item'><div class='bullet' id='elec_comp'></div><div class='label'>Electric</div></div>
+  <div class='item'><div class='bullet' id='rail_corr'></div><div class='label'>Railroad</div></div>
+</div>
+</div>
+
+<div id='menu-content'></div>
+
+  <div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+        <label>Opacity: <span id='slider-value'>100%</span></label>
+        <input id='slider' type='range' min='0' max='100' step='0' value='100' />
+    </div>
+</div>
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpdnNxdGo4bDA1d2UydHA1YzhybndobWMifQ.olkCyIyzu2YP2OWErDTSbA';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    zoom: 14.5,
+    center: [-96.80011, 32.7817035]
+});
+
+
+var slider = document.getElementById('slider');
+var sliderValue = document.getElementById('slider-value');
+
+map.on('load', function () {
+    map.addSource('parcels', {
+        type: 'vector',
+        url: 'mapbox://iskandarblue.1grphysg'
+    });
+    map.addLayer({
+        "id": "parcel06",
+        "type": "fill",
+        "source": "parcels",
+        "source-layer": "parcel06cert",
+        'layout': {
+          "visibility" : "none"
+        },
+        "paint": {
+          'fill-color': {
+            property: 'SPTBCODE',
+            type: 'categorical',
+            stops: [['A11', '#2EFE64'], ['C11', '#E9A443'],['C13', '#ff99ff'],['C12','#FF0080'],['B11', '#FE2E2E'],['B12', '#FFFF00'],['F10', '#08f'],['F20', '#808080']
+          ]
+          },
+          'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
+          'fill-opacity':1.0
+      },
+  }, 'road-primary');
+
+  map.addSource('parcels_11', {
+      type: 'vector',
+      url: 'mapbox://iskandarblue.6wxpmwwn'
+  });
+  map.addLayer({
+      "id": "parcel11",
+      "type": "fill",
+      "source": "parcels_11",
+      "source-layer": "Parcel11certgeojson",
+      'layout': {
+        "visibility" : "none"
+      },
+      "paint": {
+        'fill-color': {
+          property: 'SPTBCODE',
+          type: 'categorical',
+          stops: [['A11', '#2EFE64'], ['C11', '#E9A443'],['C13', '#ff99ff'],['C12','#FF0080'],['B11', '#FE2E2E'],['B12', '#FFFF00'],['F10', '#08f'],['F20', '#808080']
+        ]
+        },
+        'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
+        'fill-opacity':1.0
+    },
+},  'road-primary');
+
+map.addSource('parcels_16', {
+    type: 'vector',
+    url: 'mapbox://iskandarblue.68tpn6iv'
+});
+map.addLayer({
+    "id": "parcel16",
+    "type": "fill",
+    "source": "parcels_16",
+    "source-layer": "parcel16geojson",
+    'layout': {
+      "visibility" : "none"
+    },
+    "paint": {
+      'fill-color': "#4d994d",
+      'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
+      'fill-opacity':1.0
+    },
+  },  'road-major');
+
+  map.addLayer({
+      'id': 'parcel-hover',
+      'type': 'fill',
+      'source': 'parcels',
+      "source-layer": "parcel06cert",
+      'paint': {
+          'fill-color': 'rgba(0, 0, 0, 1.0)',
+          'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+      },
+    "filter": ["==", "RELKEY", ""]
+  },  'road-primary');
+
+
+    map.addLayer({
+        'id': 'parcel-hover2',
+        'type': 'fill',
+        "source": "parcels_11",
+        "source-layer": "Parcel11certgeojson",
+        'paint': {
+            'fill-color': 'rgba(0, 0, 0, 1.0)',
+            'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+        },
+      "filter": ["==", "RELKEY", ""]
+    },  'road-primary');
+
+
+      map.addLayer({
+          'id': 'parcel-hover3',
+          'type': 'fill',
+          "source": "parcels_16",
+          "source-layer": "parcel16geojson",
+          'paint': {
+              'fill-color': 'rgba(0, 0, 0, 1.0)',
+              'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+          },
+        "filter": ["==", "RELKEY", ""]
+      },  'road-major');
+});
+
+slider.addEventListener('input', function(e) {
+        // Adjust the layers opacity. layer here is arbitrary - this could
+        // be another layer name found in your style or a custom layer
+        // added on the fly using `addSource`.
+        map.setPaintProperty('parcel06', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+        // Value indicator
+        sliderValue.textContent = e.target.value + '%';
+    });
+
+    var toggleableLayerIds = ['parcel06', 'parcel11', 'parcel16'];
+    for (var i = 0; i < toggleableLayerIds.length; i++) {
+        var id = toggleableLayerIds[i];
+
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'active';
+        link.textContent = id;
+
+        link.onclick = function (e) {
+            var clickedLayer = this.textContent;
+            var notClicked = toggleableLayerIds.filter(v => v != clickedLayer);
+            e.preventDefault();
+            e.stopPropagation();
+
+
+            slider.addEventListener('input', function(e) {
+                    // Adjust the layers opacity. layer here is arbitrary - this could
+                    // be another layer name found in your style or a custom layer
+                    // added on the fly using `addSource`.
+                    map.setPaintProperty(clickedLayer, 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+                    // Value indicator
+                    sliderValue.textContent = e.target.value + '%';
+                });
+
+            var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+            if (visibility === 'visible') {
+
+                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                this.className = 'active';
+                map.setLayoutProperty('parcel-hover','visibility', 'none');
+                  map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                    map.setLayoutProperty('parcel-hover2','visibility', 'none');
+
+            } else {
+                this.className = '';
+                map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+
+                for (var i = 0; i < notClicked.length; i++)
+                  map.setLayoutProperty(notClicked[i], 'visibility', 'none');
+
+
+            }
+
+                map.on('mousemove', function (e) {
+                    var features = map.queryRenderedFeatures(e.point);
+                    map.getCanvas().style.cursor = (features.length) ? 'crosshair' : '';
+                });
+
+        };
+
+        var layers = document.getElementById('menu');
+        layers.appendChild(link);
+
+    }
+
+
+    map.on('click', function (e) {
+        // Use queryRenderedFeatures to get features at a click event's point
+        // Use layer option to avoid getting results from other layers
+        var features = map.queryRenderedFeatures(e.point);
+        // if there are features within the given radius of the click event,
+        // fly to the location of the click event
+
+        var parcelKey = features[0].properties.RELKEY
+
+        var layerName = features[0].layer.id
+
+        var url = '/api/parcels/'+layerName+'/parcel/'+parcelKey;  makeAjaxRequest(url, params = {}) 
+                				.done(function(result) { 
+
+                        var jsonRes = result.message.rows;
+                        if (features.length) {
+                            // Get coordinates from the symbol and center the map on those coordinates
+                            map.flyTo({center: e.lngLat});
+                            console.log(e.lngLat);
+                        }
+
+                        function name(str) {
+                          if (str === null) {
+                            return "n/a"
+                        } else {
+                            return str
+                        }
+                      }
+
+                      function legal(str) {
+                        if (str === null) {
+                          return ""
+                      } else {
+                          return str
+                      }
+                    }
+
+                        function addCommas(nStr) {
+                              nStr += '';
+                              var x = nStr.split('.');
+                              var x1 = x[0];
+                              var x2 = x.length > 1 ? '.' + x[1] : '';
+                              var rgx = /(\d+)(\d{3})/;
+                              while (rgx.test(x1)) {
+                                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                              }
+                              return x1 + x2;
+                        }
+
+                        function replacer(key, value) {
+                                  // Filtering out properties
+                                  if (value === null) {
+                                    return undefined;
+                                  }
+                                  return value;
+                                }
+
+                        if (features.length > 0 && features[0].layer.id === 'parcel06') {
+                            map.setFilter('parcel-hover', ['==', 'RELKEY', features[0].properties.RELKEY]);
+                            map.setLayoutProperty('parcel-hover','visibility', 'visible');
+                            document.getElementById('panel').innerHTML =
+                            '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
+                            '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
+                            + addCommas(Math.round(jsonRes[0].area)) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ addCommas(Math.round(jsonRes[0].land_val)) + '</h3></div>'
+                            + '<div><h3> <u>Business Name:</u>  ' + name(jsonRes[0].busname)+ '</h3></div>' + '<div><h3> <u>Taxpayer Name:</u>  ' + name(jsonRes[0].taxpaname1)+ '</h3></div>'
+                            + '<div><h3 style ="opacity:0.5"> <u>Taxpayer City:</u>  ' + name(jsonRes[0].taxpacity)+ '</h3></div>'
+                            + '<div><h3 style ="opacity:0.5"> <u>County:</u>  ' + name(jsonRes[0].county)+ '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>City:</u>  ' + name(jsonRes[0].city)+ '</h3></div>'
+                            + '<div><h3 style ="opacity:0.5"> <u>Subdivision:</u>  ' + name(jsonRes[0].legal_1) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 2:</u>  ' + legal(jsonRes[0].legal_2) + '</h3></div>'
+                            + '<div><h3 style ="opacity:0.5"> <u>Legal 3:</u>  '  + name(jsonRes[0].legal_3) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 4:</u>  ' + legal(jsonRes[0].legal_4) + '</h3></div>';
+                          } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
+                                map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
+                                map.setLayoutProperty('parcel-hover2','visibility', 'visible');
+                                document.getElementById('panel').innerHTML =
+                                '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
+                                '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
+                                + addCommas(Math.round(jsonRes[0].area)) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ addCommas(Math.round(jsonRes[0].land_val)) + '</h3></div>'
+                                + '<div><h3> <u>Business Name:</u>  ' + name(jsonRes[0].busname)+ '</h3></div>' + '<div><h3> <u>Taxpayer Name:</u>  ' + name(jsonRes[0].taxpaname1)+ '</h3></div>'
+                                + '<div><h3 style ="opacity:0.5"> <u>Taxpayer City:</u>  ' + name(jsonRes[0].taxpacity)+ '</h3></div>'
+                                + '<div><h3 style ="opacity:0.5"> <u>County:</u>  ' + name(jsonRes[0].county)+ '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>City:</u>  ' + name(jsonRes[0].city)+ '</h3></div>'
+                                + '<div><h3 style ="opacity:0.5"> <u>Subdivision:</u>  ' + name(jsonRes[0].legal_1) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 2:</u>  ' + legal(jsonRes[0].legal_2) + '</h3></div>'
+                                + '<div><h3 style ="opacity:0.5"> <u>Legal 3:</u>  '  + name(jsonRes[0].legal_3) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 4:</u>  ' + legal(jsonRes[0].legal_4) + '</h3></div>';
+                              } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
+                                    map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
+                                    map.setLayoutProperty('parcel-hover3','visibility', 'visible');
+                                    document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
+                                  } else {
+                                        map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
+                                        map.setFilter('parcel-hover2', ['==', 'RELKEY', '']);
+                                        map.setFilter('parcel-hover3', ['==', 'RELKEY', '']);
+                                    }
+
+                        }) 
+                        .fail(function(error) { 
+                            console.log(error) 
+                         })
+
+
+
+
+    });
+
+var makeAjaxRequest = function(url, params) {
+ 			return $.ajax({ 
+    				url: url,
+ 	type: 'GET', 
+            	dataType: 'json', 
+              data: params, 
+        	});
+      }
+
+      map.addControl(new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken
+      }));
+
+</script>
+</body>
+</html>
