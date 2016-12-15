@@ -11,9 +11,9 @@ let port = process.env.PORT || 8081;// set our port
 // will be read if the config is not present
 var config = {
   user: 'postgres', //env var: PGUSER
-  database: 'dallas', //env var: PGDATABASE
-  password: 'kAa1thmandU', //env var: PGPASSWORD
-  host: 'localhost', // Server hosting the postgres database
+  database: 'awsuser', //env var: PGDATABASE
+  password: 'mypassword', //env var: PGPASSWORD
+  host: 'mydbinstance.cpu2z0a5bugq.us-east-2.rds.amazonaws.com', // Server hosting the postgres database
   port: 5432, //env var: PGPORT
   max: 10, // max number of clients in the pool
   idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
