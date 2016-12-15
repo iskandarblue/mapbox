@@ -10,8 +10,8 @@ let port = process.env.PORT || 8081;// set our port
 // note: all config is optional and the environment variables
 // will be read if the config is not present
 var config = {
-  user: 'postgres', //env var: PGUSER
-  database: 'awsuser', //env var: PGDATABASE
+  user: 'awsuser', //env var: PGUSER
+  database: 'mydb', //env var: PGDATABASE
   password: 'mypassword', //env var: PGPASSWORD
   host: 'mydbinstance.cpu2z0a5bugq.us-east-2.rds.amazonaws.com', // Server hosting the postgres database
   port: 5432, //env var: PGPORT
