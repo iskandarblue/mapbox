@@ -489,6 +489,8 @@ slider.addEventListener('input', function(e) {
                         if (features.length > 0 && features[0].layer.id === 'parcel06') {
                             map.setFilter('parcel-hover', ['==', 'RELKEY', features[0].properties.RELKEY]);
                             map.setLayoutProperty('parcel-hover','visibility', 'visible');
+                            map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                            map.setLayoutProperty('parcel-hover3','visibility', 'none');
                             document.getElementById('panel').innerHTML =
                             '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
                             '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
@@ -501,6 +503,8 @@ slider.addEventListener('input', function(e) {
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
                                 map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                 map.setLayoutProperty('parcel-hover2','visibility', 'visible');
+                                map.setLayoutProperty('parcel-hover','visibility', 'none');
+                                map.setLayoutProperty('parcel-hover3','visibility', 'none');
                                 document.getElementById('panel').innerHTML =
                                 '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
                                 '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
@@ -513,6 +517,8 @@ slider.addEventListener('input', function(e) {
                               } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
+                                    map.setLayoutProperty('parcel-hover','visibility', 'none');
+                                    map.setLayoutProperty('parcel-hover2','visibility', 'none');
                                     document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
                                   } else {
                                         map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
