@@ -219,6 +219,12 @@ var map = new mapboxgl.Map({
     center: [-96.80011, 32.7817035]
 });
 
+var geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken
+});
+
+map.addControl(geocoder);
+
 
 var slider = document.getElementById('slider');
 var sliderValue = document.getElementById('slider-value');
@@ -328,6 +334,30 @@ map.addLayer({
           },
         "filter": ["==", "RELKEY", ""]
       },  'road-primary');
+
+      map.addSource('single-point', {
+       "type": "geojson",
+       "data": {
+           "type": "FeatureCollection",
+           "features": []
+       }
+   });
+
+   map.addLayer({
+       "id": "point",
+       "source": "single-point",
+       "type": "circle",
+       "paint": {
+           "circle-radius": 10,
+           "circle-color": "#007cbf"
+       }
+   });
+
+   // Listen for the `geocoder.input` event that is triggered when a user
+   // makes a selection and add a symbol that matches the result.
+   geocoder.on('result', function(ev) {
+       map.getSource('single-point').setData(ev.result.geometry);
+   });
 });
 
 slider.addEventListener('input', function(e) {
@@ -509,9 +539,7 @@ var makeAjaxRequest = function(url, params) {
         	});
       }
 
-      map.addControl(new MapboxGeocoder({
-          accessToken: mapboxgl.accessToken
-      }));
+
 
 </script>
 </body>
