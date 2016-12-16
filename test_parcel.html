@@ -404,7 +404,7 @@ slider.addEventListener('input', function(e) {
                 this.className = 'active';
                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                   map.setLayoutProperty('parcel-hover2','visibility', 'none');
-                    map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                    map.setLayoutProperty('parcel-hover3','visibility', 'none');
 
             } else {
                 this.className = '';
@@ -491,29 +491,13 @@ slider.addEventListener('input', function(e) {
                             map.setLayoutProperty('parcel-hover','visibility', 'visible');
                             map.setLayoutProperty('parcel-hover2','visibility', 'none');
                             map.setLayoutProperty('parcel-hover3','visibility', 'none');
-                            document.getElementById('panel').innerHTML =
-                            '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
-                            '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
-                            + addCommas(Math.round(jsonRes[0].area)) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ addCommas(Math.round(jsonRes[0].land_val)) + '</h3></div>'
-                            + '<div><h3> <u>Business Name:</u>  ' + name(jsonRes[0].busname)+ '</h3></div>' + '<div><h3> <u>Taxpayer Name:</u>  ' + name(jsonRes[0].taxpaname1)+ '</h3></div>'
-                            + '<div><h3 style ="opacity:0.5"> <u>Taxpayer City:</u>  ' + name(jsonRes[0].taxpacity)+ '</h3></div>'
-                            + '<div><h3 style ="opacity:0.5"> <u>County:</u>  ' + name(jsonRes[0].county)+ '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>City:</u>  ' + name(jsonRes[0].city)+ '</h3></div>'
-                            + '<div><h3 style ="opacity:0.5"> <u>Subdivision:</u>  ' + name(jsonRes[0].legal_1) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 2:</u>  ' + legal(jsonRes[0].legal_2) + '</h3></div>'
-                            + '<div><h3 style ="opacity:0.5"> <u>Legal 3:</u>  '  + name(jsonRes[0].legal_3) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 4:</u>  ' + legal(jsonRes[0].legal_4) + '</h3></div>';
+                            document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
                                 map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                 map.setLayoutProperty('parcel-hover2','visibility', 'visible');
                                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover3','visibility', 'none');
-                                document.getElementById('panel').innerHTML =
-                                '<div><h3> <u>Address:</u> ' + name(jsonRes[0].st_num)  + '&nbsp' + name(jsonRes[0].st_name) + '&nbsp' + name(jsonRes[0].st_type) +
-                                '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + jsonRes[0].prop_cl + '</h3></div>' + '<div><h3> <u>Area:</u> '
-                                + addCommas(Math.round(jsonRes[0].area)) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ addCommas(Math.round(jsonRes[0].land_val)) + '</h3></div>'
-                                + '<div><h3> <u>Business Name:</u>  ' + name(jsonRes[0].busname)+ '</h3></div>' + '<div><h3> <u>Taxpayer Name:</u>  ' + name(jsonRes[0].taxpaname1)+ '</h3></div>'
-                                + '<div><h3 style ="opacity:0.5"> <u>Taxpayer City:</u>  ' + name(jsonRes[0].taxpacity)+ '</h3></div>'
-                                + '<div><h3 style ="opacity:0.5"> <u>County:</u>  ' + name(jsonRes[0].county)+ '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>City:</u>  ' + name(jsonRes[0].city)+ '</h3></div>'
-                                + '<div><h3 style ="opacity:0.5"> <u>Subdivision:</u>  ' + name(jsonRes[0].legal_1) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 2:</u>  ' + legal(jsonRes[0].legal_2) + '</h3></div>'
-                                + '<div><h3 style ="opacity:0.5"> <u>Legal 3:</u>  '  + name(jsonRes[0].legal_3) + '</h3></div>' + '<div><h3 style ="opacity:0.5"> <u>Legal 4:</u>  ' + legal(jsonRes[0].legal_4) + '</h3></div>';
+                                document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
                               } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
