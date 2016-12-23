@@ -10,6 +10,17 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <style>
         body { margin:0; padding:0; }
+
+        .geocoder {
+          position:absolute;
+          z-index:1;
+          right:5px;
+          margin-left:-25%;
+          top:5px;
+          }
+        .mapboxgl-ctrl-geocoder { min-width:100%; }
+
+
         .filter-ctrl {
             position: absolute;
             top: 300px;
@@ -22,7 +33,7 @@
             font-family:'Open Sans', sans-serif;
             width: 100%;
             border: 0;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(12, 12, 12, 0.8);
             height: 40px;
             margin: 0;
             color: #eee;
@@ -32,7 +43,7 @@
 
         .map-overlay {
             font-family:'Open Sans', sans-serif;
-            color: white;
+            color: rgba(250, 250, 250, 0.8);
             position: absolute;
             width: 120px;
             top: 275px;
@@ -41,8 +52,8 @@
         }
 
         .map-overlay .map-overlay-inner {
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 2px solid lightgrey;
+            background-color: rgba(12, 12, 12, 0.8);
+            border: 0px solid lightgrey;
             border-radius: 5px;
             padding: 5px;
             margin-bottom: 10px;
@@ -61,14 +72,26 @@
             margin: 0;
             cursor: ew-resize;
         }
-        #townhouses { background: #2EFE64; }
-        #apartments { background: #ff99ff; }
-        #vacant_lots { background: #808080; }
-        #commercial { background: #FF0080; }
-        #commercial_imp { background: #08f; }
-        #industrial_imp { background: #FFFF00; }
-        #elec_comp { background: #FE2E2E; }
-        #rail_corr { background: #E9A443; }
+
+        #header {
+          position: absolute;
+          z-index: 1012022;
+          top: 0px;
+          width: 100%;
+          line-height: 50px;
+          height: 50px;
+          background: rgba(12, 12, 12, 0.8);
+          color: #eee;
+        }
+
+
+        #agricultural { background: #2EFE64; }
+        #residential { background: #E9A443; }
+        #commercial { background: #08f; }
+        #mixeduse { background: #FFFF00; }
+        #industrial { background: #FE2E2E; }
+        #openspace { background: #E8ECFF; }
+        #other { background: #A8A8A8; }
         .items { text-align: center; }
         .item { display: inline-block; }
         .bullet { display: inline-block; margin: 3px 3px 0px 10px;  width: 10px; height: 10px; border-radius: 7px; }
@@ -81,24 +104,18 @@
         #map { position:absolute; top:0; bottom:0; width:100%; }
         #panel {
           position: absolute;
-          z-index: 1010101;
-          display: block;
-          width: 300px;
+          z-index: 1012022;
+          top: 60px;
+          left: 10px;
+          height: 400px;
+          width: 290px;
           overflow-y: auto;
-          overflow-x: scroll;
-          background: rgba(0, 0, 0, 0.9);
-          color: white;
-          height: 87%;
-          top: 5px;
-          left: 5px;
-          padding: 0 10px;
-          border: 2px solid lightgrey;
-          text-align:left;
-          border-radius: 5px;
+          background: rgba(12, 12, 12, 0.8);
+          color: #eee;
+          padding: 10px;
           font-family: 'Open Sans', sans-serif;
-          font-size: 14px;
-          line-height: 1.5em;
         }
+
         #menu {
             color: rgba(250,250,250, 1);
             position: absolute;
@@ -166,6 +183,35 @@
           cursor: pointer;
         }
 
+        #modes {
+          margin-left: 20px;
+          display: inline-block;
+        }
+
+        .mode, .mode-selected {
+            display: inline-block;
+            height: 28px;
+            line-height: 28px;
+            color: #eee;
+            border-radius: 2px;
+            z-index: 3;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            font-family: 'Open Sans', sans-serif;
+            padding: 5px 10px;
+        }
+
+        .mode-selected {
+          background: #444;
+        }
+
+        .mode:hover, .mode:active,
+        .mode-selected:hover, .mode-selected:active {
+            color: #fff;
+        }
+
+
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -180,21 +226,35 @@
 <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
 <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
 
+
+
 <div id='map'></div>
 
-<nav id='menu'></nav>
+
+
+<div id='header'>
+  <div id = 'modes'>
+  <div class = 'mode-selected' id='Dallas'>Dallas</div>
+  <div class = 'mode' id='Dal06'>2006</div>
+  <div class = 'mode' id='Dal11'>2011</div>
+  <div class = 'mode' id='Dal16'>2016</div>
+    <div class = 'mode' id='Oakland'>Oakland</div>
+    <div class = 'mode' id='Oak16'>2016</div>
+    <div id='geocoder' class='geocoder'></div>
+  </div>
+</div>
+
 <div id ='panel'>[Choose a parcel] </div>
 
 <div id='legend'>
 <div class='items'>
-  <div class='item'><div class='bullet' id='townhouses'></div><div class='label'>Townhouses</div></div>
-  <div class='item'><div class='bullet' id='apartments'></div><div class='label'>Apartments</div></div>
-  <div class='item'><div class='bullet' id='vacant_lots'></div><div class='label'>Vacant Lots</div></div>
+  <div class='item'><div class='bullet' id='agricultural'></div><div class='label'>Agricultural</div></div>
+  <div class='item'><div class='bullet' id='residential'></div><div class='label'>Residential</div></div>
+  <div class='item'><div class='bullet' id='mixeduse'></div><div class='label'>Mixed Use</div></div>
   <div class='item'><div class='bullet' id='commercial'></div><div class='label'>Commercial</div></div>
-  <div class='item'><div class='bullet' id='commercial_imp'></div><div class='label'>Commercial Improvements</div></div>
-  <div class='item'><div class='bullet' id='industrial_imp'></div><div class='label'>Industrial Improvements</div></div>
-  <div class='item'><div class='bullet' id='elec_comp'></div><div class='label'>Electric</div></div>
-  <div class='item'><div class='bullet' id='rail_corr'></div><div class='label'>Railroad</div></div>
+  <div class='item'><div class='bullet' id='industrial'></div><div class='label'>Industrial</div></div>
+  <div class='item'><div class='bullet' id='openspace'></div><div class='label'>Open Space</div></div>
+  <div class='item'><div class='bullet' id='other'></div><div class='label'>Other</div></div>
 </div>
 </div>
 
@@ -202,12 +262,21 @@
 
   <div class='map-overlay top'>
     <div class='map-overlay-inner'>
-        <label>Opacity: <span id='slider-value'>100%</span></label>
-        <input id='slider' type='range' min='0' max='100' step='0' value='100' />
+        <label>Opacity: <span id='slider-value'>50%</span></label>
+        <input id='slider' type='range' min='0' max='100' step='0' value='50' />
     </div>
 </div>
+
+
+
+
 <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
 <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+<style>
+.mapboxgl-ctrl-top-right {
+    top: 50px;
+}
+</style>
 
 
 <script>
@@ -215,30 +284,82 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpdnNxdGo4bDA1d2Uyd
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v9',
-    zoom: 14.5,
-    center: [-96.80011, 32.7817035]
+    zoom: 12,
+    center: [-96.7970, 32.7767]
 });
 
+document.getElementById('Oakland').addEventListener('click', function () {
+    // Fly to a random location by offsetting the point -74.50, 40
+    // by up to 5 degrees.
+    map.jumpTo({
+        center: [-122.2711, 37.8044],
+        zoom: 12
+    });
+    var linkA = document.getElementById('Oakland');
+    linkA.className = 'mode-selected';
+
+    var linkB = document.getElementById('Dallas');
+    linkB.className = 'mode';
+
+    var linkC = document.getElementById('Dal06');
+    linkC.className = 'mode';
+    var linkD = document.getElementById('Dal11');
+    linkD.className = 'mode';
+    var linkE = document.getElementById('Dal16');
+    linkE.className = 'mode';
+
+
+
+});
+
+document.getElementById('Dallas').addEventListener('click', function () {
+    // Fly to a random location by offsetting the point -74.50, 40
+    // by up to 5 degrees.
+    map.jumpTo({
+        center: [-96.7970, 32.7767],
+        zoom: 12
+    });
+    var linkA = document.getElementById('Oakland');
+    linkA.className = 'mode';
+
+    var linkB = document.getElementById('Dallas');
+    linkB.className = 'mode-selected';
+
+    var linkC = document.getElementById('Dal06');
+    linkC.className = 'mode';
+    var linkD = document.getElementById('Dal11');
+    linkD.className = 'mode';
+    var linkE = document.getElementById('Dal16');
+    linkE.className = 'mode';
+    var linkF = document.getElementById('Oak16');
+    linkF.className = 'mode';
+});
+
+/*  Add geocoder slider */
 var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken
 });
 
-map.addControl(geocoder);
+document.getElementById('geocoder').appendChild(geocoder.onAdd(map))
 
 
+/*  Add opacity slider */
 var slider = document.getElementById('slider');
 var sliderValue = document.getElementById('slider-value');
+
+
+/*  Add first layer */
 
 map.on('load', function () {
     map.addSource('parcels', {
         type: 'vector',
-        url: 'mapbox://iskandarblue.1grphysg'
+        url: 'mapbox://iskandarblue.4sjpf86x'
     });
     map.addLayer({
         "id": "parcel06",
         "type": "fill",
         "source": "parcels",
-        "source-layer": "parcel06cert",
+        "source-layer": "parcel06geojson",
         'layout': {
           "visibility" : "none"
         },
@@ -246,13 +367,20 @@ map.on('load', function () {
           'fill-color': {
             property: 'SPTBCODE',
             type: 'categorical',
-            stops: [['A11', '#2EFE64'], ['C11', '#E9A443'],['C13', '#ff99ff'],['C12','#FF0080'],['B11', '#FE2E2E'],['B12', '#FFFF00'],['F10', '#08f'],['F20', '#808080']
+            stops: [['A11', '#E9A443'], ['A1', '#E9A443'],['C11', '#E9A443'],
+            ['C12', '#08f'],['B12', '#E9A443'],['A12', '#E9A443'],['F10', '#08f'],
+            ['B11', '#E9A443'],['C13', '#FE2E2E'],['F1', '#08f'],['D10', '#2EFE64'],
+            ['C1', '#E9A443'], ['J30', '#FE2E2E'], ['C14', '#08f'], ['A4', '#E9A443'],['A3', '#E9A443'],
+            ['F20', '#FE2E2E'],['A20', '#E9A443'],['O1', '#FE2E2E'],['A20', '#E9A443'],['D20', '#A8A8A8'],
+            ['J51', '#FE2E2E'],['E12', '#2EFE64'],['011', '#E9A443'],['A13', '#E9A443'],['E11', '#2EFE64']
           ]
           },
-          'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
-          'fill-opacity':1.0
+          'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
+          'fill-opacity':0.5
       },
   }, 'road-primary');
+
+/*  Add second layer */
 
   map.addSource('parcels_11', {
       type: 'vector',
@@ -270,40 +398,98 @@ map.on('load', function () {
         'fill-color': {
           property: 'SPTBCODE',
           type: 'categorical',
-          stops: [['A11', '#2EFE64'], ['C11', '#E9A443'],['C13', '#ff99ff'],['C12','#FF0080'],['B11', '#FE2E2E'],['B12', '#FFFF00'],['F10', '#08f'],['F20', '#808080']
+          stops: [['A11', '#E9A443'], ['A1', '#E9A443'],['C11', '#E9A443'],
+          ['C12', '#08f'],['B12', '#E9A443'],['A12', '#E9A443'],['F10', '#08f'],
+          ['B11', '#E9A443'],['C13', '#FE2E2E'],['F1', '#08f'],['D10', '#2EFE64'],
+          ['C1', '#E9A443'], ['J30', '#FE2E2E'], ['C14', '#08f'], ['A4', '#E9A443'],['A3', '#E9A443'],
+          ['F20', '#FE2E2E'],['A20', '#E9A443'],['O1', '#FE2E2E'],['A20', '#E9A443'],
+          ['B2', '#E9A443'],['OL', '#E9A443'],['O', '#E9A443'],['C2', '#E9A443'],
+          ['J51', '#FE2E2E'],['C3', '#08f'],['D1', '#2EFE64'],['D2', '#2EFE64'],
+          ['M4', '#A8A8A8'],['02', '#A8A8A8'],['M6', '#A8A8A8'],['B1', '#E9A443'],
+          ['F3', '#08f'],['A6', '#E9A443'],['E12', '#2EFE64'],['E1', '#2EFE64'],
+          ['A7', '#E9A443'],['F2', '#FE2E2E'],['A2', '#E9A443'],['D4','#E8ECFF'],
+          ['D3', '#2EFE64'],['EX4', '#A8A8A8'],['A8', '#E9A443'],['C4','#A8A8A8']
         ]
         },
-        'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
-        'fill-opacity':1.0
+        'fill-outline-color': 'rgba(250, 250, 250, 0.9)',
+        'fill-opacity':0.5
     },
 },  'road-primary');
 
+/*  Add third layer */
+
 map.addSource('parcels_16', {
     type: 'vector',
-    url: 'mapbox://iskandarblue.68tpn6iv'
+    url: 'mapbox://iskandarblue.bcuv2gqb'
 });
 map.addLayer({
     "id": "parcel16",
     "type": "fill",
     "source": "parcels_16",
-    "source-layer": "parcel16geojson",
+    "source-layer": "parcelgeojson",
     'layout': {
       "visibility" : "none"
     },
     "paint": {
-      'fill-color': "#4d994d",
-      'fill-outline-color': 'rgba(0, 0, 0, 0.9)',
-      'fill-opacity':1.0
+      'fill-color': {
+        property: 'sptbcode',
+        type: 'categorical',
+        stops: [['CA-1(A)', '#08f'], ['CA-2(A)', '#08f'],['CR', '#08f'],['CS', '#08f'],['RR', '#08f'],['CS', '#08f'],
+        ['A(A)', '#2EFE64'],
+        ['R-7.5(A)','#E9A443'],['R-5(A)', '#E9A443'],['R-10(A)', '#E9A443'], ['R-16(A)', '#E9A443'], ['CD', '#E9A443'],['TH-3(A)', '#E9A443'],['MF-2(A)', '#E9A443'], ['D(A)', '#E9A443'],
+        ['TH-2(A)', '#E9A443'],['R-1ac(A)', '#E9A443'],['R-1/2ac(A)', '#E9A443'], ['MF-1(A)', '#E9A443'],['TH-1(A)', '#E9A443'],
+        ['PD', '#FFFF00'],['MU-1', '#FFFF00'],['MU-2', '#FFFF00'],['MU-3', '#FFFF00'],['IM', '#FE2E2E'],['IR', '#FE2E2E'], ['LI', '#FE2E2E'],
+        ['O1', '#E9A443'], ['B2', '#E9A443'],['OL', '#E9A443'], ['O', '#E9A443'],['C2', '#E9A443']
+        ]
+      },
+      'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
+      'fill-opacity':0.5
     },
   },  'road-primary');
+
+  map.addSource('parcels_160', {
+      type: 'vector',
+      url: 'mapbox://iskandarblue.43is3olb'
+  });
+  map.addLayer({
+      "id": "parcel160",
+      "type": "fill",
+      "source": "parcels_160",
+      "source-layer": "finaloakgeojson",
+      'layout': {
+        "visibility" : "none"
+      },
+      "paint": {
+        'fill-color': {
+          property: 'basezone',
+          type: 'categorical',
+          stops: [['RD-1', '#E9A443'], ['RM-2', '#FFFF00'],['RH-4', '#E9A443'],['RD-2', '#E9A443'],['RM-3', '#FFFF00'],
+          ['RM-1', '#FFFF00'],['RH-3','#E9A443'],['RM-4', '#FFFF00'],['CN-3', '#08f'], ['RU-2', '#E9A443'], ['HBX-2', '#FFFF00'],
+          ['RU-4', '#E9A443'],['CC-2', '#08f'],['RU-1', '#E9A443'], ['RU-5', '#E9A443'],['CIX-2', '#FE2E2E'],
+          ['RH-2', '#E9A443'],['RU-3', '#E9A443'],['HBX-1', '#FFFF00'],['CN-2', '#08f'],['IG', '#FE2E2E'],['CN-1', '#08f'], ['RH-1', '#E9A443'],
+          ['D-CE-3', '#A8A8A8'], ['D-LM-4', '#A8A8A8'],['OS (RCA)', '#E8ECFF'], ['CBD-R', '#08f'],['CBD-X', '#08f'],['CBD-P', '#08f'],['CBD-C', '#08f'],
+          ['CIX-1A', '#FE2E2E'],['D-LM-2', '#A8A8A8'], ['C-45', '#08f'],['CIX-1B', '#FE2E2E'],
+          ['OS (NP)', '#E8ECFF'],['S-15', '#08f'], ['CR-1', '#08f'],['CN-4', '#08f'],
+          ['D-CE-6', '#A8A8A8'],['S-1', '#08f'],['D-CO-5', '#A8A8A8'],['D-BV-1', '#08f'],['S-1', '#08f'],['D-CO-5', '#A8A8A8'],
+          ['D-BV-1', '#08f'],['CC-3', '#08f'],['CIX-1C', '#FE2E2E'],['D-BV-3', '#FFFF00'],['HBX-4', '#FFFF00'],['M-30', '#FE2E2E'],
+          ['D-CE-5', '#FE2E2E'],['CIX-1', '#FE2E2E'],['CIX-1D', '#FE2E2E'],['D-CO-1', '#A8A8A8'],['S-15W', '#08f'],['D-CO-3', '#08f'],
+          ['D-WS', '#FE2E2E'],['CIX-1', '#FE2E2E'],['CIX-1C', '#FE2E2E'],['D-BV-3', '#FFFF00'],['HBX-4', '#FFFF00'],['M-30', '#FE2E2E'],
+        ]
+        },
+        'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
+        'fill-opacity':0.5
+      },
+    },  'road-primary');
+
+/*  Add hover layers */
 
   map.addLayer({
       'id': 'parcel-hover',
       'type': 'fill',
       'source': 'parcels',
-      "source-layer": "parcel06cert",
+      "source-layer": "parcel06geojson",
       'paint': {
-          'fill-color': 'rgba(0, 0, 0, 1.0)',
+          'fill-color': 'rgba(0, 0, 0, 0.7)',
           'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
       },
     "filter": ["==", "RELKEY", ""]
@@ -316,7 +502,7 @@ map.addLayer({
         "source": "parcels_11",
         "source-layer": "Parcel11certgeojson",
         'paint': {
-            'fill-color': 'rgba(0, 0, 0, 1.0)',
+            'fill-color': 'rgba(0, 0, 0, 0.7)',
             'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
         },
       "filter": ["==", "RELKEY", ""]
@@ -327,9 +513,21 @@ map.addLayer({
           'id': 'parcel-hover3',
           'type': 'fill',
           "source": "parcels_16",
-          "source-layer": "parcel16geojson",
+          "source-layer": "parcelgeojson",
           'paint': {
-              'fill-color': 'rgba(0, 0, 0, 1.0)',
+              'fill-color': 'rgba(0, 0, 0, 0.7)',
+              'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+          },
+        "filter": ["==", "RELKEY", ""]
+      },  'road-primary');
+
+      map.addLayer({
+          'id': 'parcel-hover4',
+          'type': 'fill',
+          "source": "parcels_160",
+          "source-layer": "finaloakgeojson",
+          'paint': {
+              'fill-color': 'rgba(0, 0, 0, 0.7)',
               'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
           },
         "filter": ["==", "RELKEY", ""]
@@ -343,6 +541,8 @@ map.addLayer({
        }
    });
 
+/*  Add geocoder result point layer */
+
    map.addLayer({
        "id": "point",
        "source": "single-point",
@@ -353,14 +553,17 @@ map.addLayer({
        }
    });
 
-   // Listen for the `geocoder.input` event that is triggered when a user
-   // makes a selection and add a symbol that matches the result.
+
+   /*  Listen for the `geocoder.input` event that is triggered when a user
+   makes a selection and add a symbol that matches the result.*/
+
    geocoder.on('result', function(ev) {
        map.getSource('single-point').setData(ev.result.geometry);
    });
 });
 
 slider.addEventListener('input', function(e) {
+
         // Adjust the layers opacity. layer here is arbitrary - this could
         // be another layer name found in your style or a custom layer
         // added on the fly using `addSource`.
@@ -370,6 +573,193 @@ slider.addEventListener('input', function(e) {
         sliderValue.textContent = e.target.value + '%';
     });
 
+document.getElementById('Dal06').addEventListener('click', function () {
+        // Fly to a random location by offsetting the point -74.50, 40
+        // by up to 5 degrees.
+        var visibility = map.getLayoutProperty('parcel06', 'visibility');
+        var link = document.getElementById('Dal06');
+        var linkB = document.getElementById('Dal11');
+        var linkC = document.getElementById('Dal16');
+        var linkD = document.getElementById('Oakland');
+
+
+        if (visibility === 'visible') {
+
+            link.className = 'mode'
+            linkB.className = 'mode'
+            linkC.className = 'mode'
+            map.setLayoutProperty('parcel06', 'visibility', 'none');
+            map.setLayoutProperty('parcel-hover','visibility', 'none');
+              map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+        } else {
+
+            link.className = 'mode-selected';
+            linkB.className = 'mode'
+            linkC.className = 'mode'
+            linkD.className = 'mode'
+            map.setLayoutProperty('parcel06', 'visibility', 'visible');
+            map.setLayoutProperty('parcel11', 'visibility', 'none');
+            map.setLayoutProperty('parcel16', 'visibility', 'none');
+            map.setLayoutProperty('parcel-hover2','visibility', 'none');
+            map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+        }
+
+        slider.addEventListener('input', function(e) {
+            // Adjust the layers opacity. layer here is arbitrary - this could
+            // be another layer name found in your style or a custom layer
+            // added on the fly using `addSource`.
+            map.setPaintProperty('parcel06', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+            // Value indicator
+            sliderValue.textContent = e.target.value + '%';
+        });
+    });
+
+
+    document.getElementById('Dal11').addEventListener('click', function () {
+            // Fly to a random location by offsetting the point -74.50, 40
+            // by up to 5 degrees.
+            var visibility = map.getLayoutProperty('parcel11', 'visibility');
+            var link = document.getElementById('Dal06');
+            var linkB = document.getElementById('Dal11');
+            var linkC = document.getElementById('Dal16');
+            var linkD = document.getElementById('Oakland');
+
+            linkB.className = 'mode';
+
+            if (visibility === 'visible') {
+
+              link.className = 'mode'
+              linkB.className = 'mode'
+              linkC.className = 'mode'
+                map.setLayoutProperty('parcel11', 'visibility', 'none');
+                map.setLayoutProperty('parcel-hover','visibility', 'none');
+                  map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                    map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+            } else {
+
+                link.className = 'mode'
+                linkB.className = 'mode-selected'
+                linkC.className = 'mode'
+                linkD.className = 'mode'
+                map.setLayoutProperty('parcel06', 'visibility', 'none');
+                map.setLayoutProperty('parcel11', 'visibility', 'visible');
+                map.setLayoutProperty('parcel16', 'visibility', 'none');
+                map.setLayoutProperty('parcel-hover','visibility', 'none');
+                map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+            }
+
+            slider.addEventListener('input', function(e) {
+                // Adjust the layers opacity. layer here is arbitrary - this could
+                // be another layer name found in your style or a custom layer
+                // added on the fly using `addSource`.
+                map.setPaintProperty('parcel11', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+                // Value indicator
+                sliderValue.textContent = e.target.value + '%';
+            });
+        });
+
+
+            document.getElementById('Dal16').addEventListener('click', function () {
+                    // Fly to a random location by offsetting the point -74.50, 40
+                    // by up to 5 degrees.
+                    var visibility = map.getLayoutProperty('parcel16', 'visibility');
+                    var link = document.getElementById('Dal06');
+                    var linkB = document.getElementById('Dal11');
+                    var linkC = document.getElementById('Dal16');
+                    var linkD = document.getElementById('Oakland');
+                    linkC.className = 'mode';
+
+                    if (visibility === 'visible') {
+
+                      link.className = 'mode'
+                      linkB.className = 'mode'
+                      linkC.className = 'mode'
+                        map.setLayoutProperty('parcel16', 'visibility', 'none');
+                        map.setLayoutProperty('parcel-hover','visibility', 'none');
+                          map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                            map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+                    } else {
+
+                      link.className = 'mode'
+                      linkB.className = 'mode'
+                      linkC.className = 'mode-selected'
+                      linkD.className = 'mode'
+                        map.setLayoutProperty('parcel06', 'visibility', 'none');
+                        map.setLayoutProperty('parcel11', 'visibility', 'none');
+                        map.setLayoutProperty('parcel16', 'visibility', 'visible');
+                        map.setLayoutProperty('parcel-hover','visibility', 'none')
+                        map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                        map.setLayoutProperty('parcel-hover3','visibility', 'none');
+
+                    }
+
+                    slider.addEventListener('input', function(e) {
+                        // Adjust the layers opacity. layer here is arbitrary - this could
+                        // be another layer name found in your style or a custom layer
+                        // added on the fly using `addSource`.
+                        map.setPaintProperty('parcel16', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+                        // Value indicator
+                        sliderValue.textContent = e.target.value + '%';
+                    });
+                });
+
+                document.getElementById('Oak16').addEventListener('click', function () {
+                        // Fly to a random location by offsetting the point -74.50, 40
+                        // by up to 5 degrees.
+                        var visibility = map.getLayoutProperty('parcel160', 'visibility');
+                        var link = document.getElementById('Dal06');
+                        var linkB = document.getElementById('Dal11');
+                        var linkC = document.getElementById('Dal16');
+                        var linkE = document.getElementById('Dallas');
+                        var linkF = document.getElementById('Oak16');
+
+                        linkF.className = 'mode';
+
+                        if (visibility === 'visible') {
+
+                          link.className = 'mode'
+                          linkB.className = 'mode'
+                          linkC.className = 'mode'
+                          linkE.className = 'mode'
+                          linkF.className = 'mode';
+
+                            map.setLayoutProperty('parcel160', 'visibility', 'none');
+                            map.setLayoutProperty('parcel-hover4','visibility', 'none');
+
+
+                        } else {
+
+                          link.className = 'mode'
+                          linkB.className = 'mode'
+                          linkC.className = 'mode'
+                          linkE.className = 'mode'
+                          linkF.className = 'mode-selected'
+                            map.setLayoutProperty('parcel160', 'visibility', 'visible');
+                            map.setLayoutProperty('parcel-hover4','visibility', 'none');
+
+
+                        }
+
+                        slider.addEventListener('input', function(e) {
+                            // Adjust the layers opacity. layer here is arbitrary - this could
+                            // be another layer name found in your style or a custom layer
+                            // added on the fly using `addSource`.
+                            map.setPaintProperty('parcel160', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+
+                            // Value indicator
+                            sliderValue.textContent = e.target.value + '%';
+                        });
+                    });
+/*
     var toggleableLayerIds = ['parcel06', 'parcel11', 'parcel16'];
     for (var i = 0; i < toggleableLayerIds.length; i++) {
         var id = toggleableLayerIds[i];
@@ -384,7 +774,9 @@ slider.addEventListener('input', function(e) {
             var notClicked = toggleableLayerIds.filter(v => v != clickedLayer);
             e.preventDefault();
             e.stopPropagation();
+*/
 
+/* Adjust opacity */
 
             slider.addEventListener('input', function(e) {
                     // Adjust the layers opacity. layer here is arbitrary - this could
@@ -396,54 +788,28 @@ slider.addEventListener('input', function(e) {
                     sliderValue.textContent = e.target.value + '%';
                 });
 
-            var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
-
-            if (visibility === 'visible') {
-
-                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                this.className = 'active';
-                map.setLayoutProperty('parcel-hover','visibility', 'none');
-                  map.setLayoutProperty('parcel-hover2','visibility', 'none');
-                    map.setLayoutProperty('parcel-hover3','visibility', 'none');
-
-            } else {
-                this.className = '';
-                map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-
-                for (var i = 0; i < notClicked.length; i++)
-                  map.setLayoutProperty(notClicked[i], 'visibility', 'none');
 
 
-            }
-
-                map.on('mousemove', function (e) {
-                    var features = map.queryRenderedFeatures(e.point);
-                    map.getCanvas().style.cursor = (features.length) ? 'crosshair' : '';
-                });
-
-        };
-
-        var layers = document.getElementById('menu');
-        layers.appendChild(link);
-
-    }
-
+    map.on('mousemove', function (e) {
+        var features = map.queryRenderedFeatures(e.point);
+        map.getCanvas().style.cursor = (features.length) ? 'crosshair' : '';
+    });
 
     map.on('click', function (e) {
         // Use queryRenderedFeatures to get features at a click event's point
         // Use layer option to avoid getting results from other layers
         var features = map.queryRenderedFeatures(e.point);
-        // if there are features within the given radius of the click event,
-        // fly to the location of the click event
 
         var parcelKey = features[0].properties.RELKEY
-
         var layerName = features[0].layer.id
+
 
         var url = '/api/parcels/'+layerName+'/parcel/'+parcelKey;  makeAjaxRequest(url, params = {}) 
                 				.done(function(result) { 
 
                         var jsonRes = result.message.rows;
+                        console.log(jsonRes[0]);
+
                         if (features.length) {
                             // Get coordinates from the symbol and center the map on those coordinates
                             map.flyTo({center: e.lngLat});
@@ -491,24 +857,35 @@ slider.addEventListener('input', function(e) {
                             map.setLayoutProperty('parcel-hover','visibility', 'visible');
                             map.setLayoutProperty('parcel-hover2','visibility', 'none');
                             map.setLayoutProperty('parcel-hover3','visibility', 'none');
-                            document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
+                            map.setLayoutProperty('parcel-hover4','visibility', 'none');
+                            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
                                 map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                 map.setLayoutProperty('parcel-hover2','visibility', 'visible');
                                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover3','visibility', 'none');
-                                document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
+                                map.setLayoutProperty('parcel-hover4','visibility', 'none');
+                                document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
                               } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
                                     map.setLayoutProperty('parcel-hover','visibility', 'none');
                                     map.setLayoutProperty('parcel-hover2','visibility', 'none');
-                                    document.getElementById('panel').innerHTML = '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
-                                  } else {
-                                        map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
-                                        map.setFilter('parcel-hover2', ['==', 'RELKEY', '']);
-                                        map.setFilter('parcel-hover3', ['==', 'RELKEY', '']);
-                                    }
+                                    map.setLayoutProperty('parcel-hover4','visibility', 'none');
+                                    document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].parent + '</div>' + '<div>' + jsonRes[0].child + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
+                                  } else if (features.length > 0 && features[0].layer.id === 'parcel160') {
+                                        map.setFilter('parcel-hover4', ['==', 'RELKEY', features[0].properties.RELKEY]);
+                                        map.setLayoutProperty('parcel-hover4','visibility', 'visible');
+                                        map.setLayoutProperty('parcel-hover3','visibility', 'none');
+                                        map.setLayoutProperty('parcel-hover','visibility', 'none');
+                                        map.setLayoutProperty('parcel-hover2','visibility', 'none');
+                                        document.getElementById('panel').innerHTML = '<div>' + jsonRes[0]["use common name"] + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t") + '</pre>';
+                                        } else {
+                                              map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
+                                              map.setFilter('parcel-hover2', ['==', 'RELKEY', '']);
+                                              map.setFilter('parcel-hover3', ['==', 'RELKEY', '']);
+                                              map.setFilter('parcel-hover4', ['==', 'RELKEY', '']);
+                                          }
 
                         }) 
                         .fail(function(error) { 
