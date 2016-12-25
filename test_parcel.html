@@ -6,6 +6,8 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <style>
@@ -211,6 +213,17 @@
             color: #fff;
         }
 
+      .no-js #loader { display: none;  }
+      .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+      .se-pre-con {
+      	position: fixed;
+      	left: 0px;
+      	top: 0px;
+      	width: 100%;
+      	height: 100%;
+      	z-index: 9999;
+      	background: url(images/loader-64x/Preloader_2.gif) center no-repeat #fff;
+      }
 
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -226,7 +239,7 @@
 <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
 <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
 
-
+<div class="se-pre-con"></div>
 
 <div id='map'></div>
 
@@ -280,6 +293,13 @@
 
 
 <script>
+
+$(window).load(function() {
+		// Animate loader off screen
+		$(".se-pre-con").fadeOut("slow");;
+	});
+
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpdnNxdGo4bDA1d2UydHA1YzhybndobWMifQ.olkCyIyzu2YP2OWErDTSbA';
 var map = new mapboxgl.Map({
     container: 'map',
