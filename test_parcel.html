@@ -824,8 +824,6 @@ document.getElementById('Oakland').addEventListener('click', function () {
     var linkE = document.getElementById('Dal16');
     linkE.className = 'mode';
 
-
-
 });
 
 document.getElementById('Dallas').addEventListener('click', function () {
@@ -1384,7 +1382,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                                 || key=="shape_st_1" || key=="centroid_x" || key=="centroid_y"
                                 || key=="shape_star"|| key=="shape_st_2" || key=="objectid"
                                 || key=="shape.star"|| key=="shape.stle" || key=="ogc_fid"
-                                || key=="relkey" || key=="fid_parcel") {
+                                || key=="relkey" || key=="fid_parcel"|| key=="shapeid_ar" || key=="area" || key=="len") {
                                     return undefined;
                                   }
                                   return value;
@@ -1396,14 +1394,14 @@ document.getElementById('Dal06').addEventListener('click', function () {
                             map.setLayoutProperty('parcel-hover2','visibility', 'none');
                             map.setLayoutProperty('parcel-hover3','visibility', 'none');
                             map.setLayoutProperty('parcel-hover4','visibility', 'none');
-                            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].sptbcode +  '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/,/g, "") + '</pre>';
+                            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].sptbcode +  '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
                                 map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                 map.setLayoutProperty('parcel-hover2','visibility', 'visible');
                                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover3','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover4','visibility', 'none');
-                                document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/,/g, "") + '</pre>';
+                                document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
                               } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
