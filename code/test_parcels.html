@@ -185,67 +185,11 @@
 
 <script>
 
-var conf = {
-		type1: {
-			id: 'type1',
-			label: 'SFR - TOWNHOUSES',
-			filter: 'A12',
-			lineColor: '#2EFE64'
-		},
-		type2: {
-			id: 'type2',
-			label: 'MFR - APARTMENTS',
-			filter: 'B11',
-			lineColor: '#ff99ff'
-		},
-		type3: {
-			id: 'type3',
-			label: 'SFR - VACANT LOTS',
-			filter: 'C11',
-			lineColor: '#808080'
-		},
-		type4: {
-			id: 'type4',
-			label: 'COMMERCIAL',
-			filter: 'C12',
-			lineColor: '#FF0080'
-		},
-		type5: {
-			id: 'type5',
-			label: 'COMMERCIAL IMPROVEMENTS',
-			filter: 'F10',
-			lineColor: '#08f'
-		},
-		type6: {
-			id: 'type6',
-			label: 'INDUSTRIAL IMPROVEMENTS',
-			filter: 'F20',
-			lineColor: '#FFFF00'
-		},
-		type7: {
-			id: 'type7',
-			label: 'ELECTRIC COMPANIES',
-			filter: 'J30',
-			lineColor: '#FE2E2E'
-		},
-		type8: {
-			id: 'type8',
-			label: 'RAILROAD CORRIDOR',
-			filter: 'J51',
-			lineColor: '#E9A443'
-		},
-    type9: {
-			id: 'type9',
-			label: 'undefined',
-			filter: null,
-			lineColor: '#a9a9a9'
-		}
-};
 
 var layerIDs = []; // Will contain a list used to filter against.
 var filterInput = document.getElementById('filter-input');
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpazE3MTJldjAzYzZ1Nm0wdXZnMGU2MGMifQ.i3E1_b9QXJS8xXuPy3OTcg';
+mapboxgl.accessToken = 'pk.eyJ1IjoiaXNrYW5kYXJibHVlIiwiYSI6ImNpdnNxdGo4bDA1d2UydHA1YzhybndobWMifQ.olkCyIyzu2YP2OWErDTSbA';
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v9',
@@ -259,50 +203,48 @@ var sliderValue = document.getElementById('slider-value');
 map.on('style.load', function () {
     // Add a GeoJSON source containing the state polygons.
     map.addSource('parcels', {
-        'type': 'geojson',
-        'data': '../data/dal_center.geojson'
+        type: 'vector',
+        url: 'mapbox://iskandarblue.4sjpf86x'
     });
-
-        map.addLayer({
-            'id': 'fills',
-            'type': 'fill',
-            'source': 'parcels',
-            'layout': {
-              "visibility" : "visible"
-            },
-            'paint': {
-                'fill-color': {
-                  property: 'SPTBCODE',
-                  type: 'categorical',
-                  stops: [['A12', '#2EFE64'], ['B11', '#ff99ff'],['C11', ''#08f''],['C12', '#FF0080'],['B12', '#FE2E2E'],['C13', '#E9A443'], ['F10', '#808080'],['F20', '#808080'],
-                  ]
-                },
-                'fill-outline-color': 'rgba(0, 0, 0, 1.0)',
-                'fill-opacity':1.0
-            },
-        });
-
     map.addLayer({
-        'id': 'parcel-hover',
-        'type': 'fill',
-        'source': 'parcels',
-        'paint': {
-            'fill-color': 'rgba(0, 0, 0, 1.0)',
-            'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+        "id": "parcel06",
+        "type": "fill",
+        "source": "parcels",
+        "source-layer": "parcel06geojson",
+        'layout': {
+          "visibility" : "visible"
         },
-      "filter": ["==", "RELKEY", ""]
-    });
-    // Add a layer showing the state polygons.
+        "paint": {
+          'fill-color': {
+            property: 'SPTBCODE',
+            type: 'categorical',
+            stops: [['A11', '#E9A443'], ['A1', '#E9A443'],['C11', '#E9A443'],
+            ['C12', '#08f'],['B12', '#E9A443'],['A12', '#E9A443'],['F10', '#08f'],
+            ['B11', '#E9A443'],['C13', '#FE2E2E'],['F1', '#08f'],['D10', '#2EFE64'],
+            ['C1', '#E9A443'], ['J30', '#FE2E2E'], ['C14', '#08f'], ['A4', '#E9A443'],['A3', '#E9A443'],
+            ['F20', '#FE2E2E'],['A20', '#E9A443'],['O1', '#FE2E2E'],['A20', '#E9A443'],['D20', '#A8A8A8'],
+            ['J51', '#FE2E2E'],['E12', '#2EFE64'],['011', '#E9A443'],['A13', '#E9A443'],['E11', '#2EFE64'],
+            ['O10', '#A8A8A8'],['M31', '#E9A443'],['G30', '#A8A8A8'],['J80', '#FE2E2E'],['J40', '#FE2E2E']
+          ]
+          },
+          'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
+          'fill-opacity':0.5
+      },
+  }, 'road-primary');
 
-    map.addLayer({
-        'id': 'parcel-layer',
-        'type': 'fill',
-        'source': 'parcels',
-        'paint': {
-            'fill-color': 'rgba(200, 100, 240, 0.0)',
-            'fill-outline-color': 'rgba(0,0,0, 0.3)'
-        }
-    });
+  map.addLayer({
+      'id': 'parcel-hover',
+      'type': 'fill',
+      'source': 'parcels',
+      "source-layer": "parcel06geojson",
+      'paint': {
+          'fill-color': 'rgba(0, 0, 0, 0.7)',
+          'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
+      },
+    "filter": ["==", "RELKEY", ""]
+  },  'road-primary');
+
+
 });
 
 
@@ -313,14 +255,14 @@ map.on('style.load', function () {
 // Use the same approach as above to indicate that the symbols are clickable
 // by changing the cursor style to 'pointer'.
 map.on('mousemove', function (e) {
-    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel-layer'] });
+    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel06'] });
     map.getCanvas().style.cursor = (features.length) ? 'crosshair' : '';
 });
 
 map.on('click', function (e) {
     // Use queryRenderedFeatures to get features at a click event's point
     // Use layer option to avoid getting results from other layers
-    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel-layer'] });
+    var features = map.queryRenderedFeatures(e.point, { layers: ['parcel06'] });
     // if there are features within the given radius of the click event,
     // fly to the location of the click event
     if (features.length) {
@@ -340,11 +282,7 @@ map.on('click', function (e) {
 
       	var props = features[0].properties;
       	map.setFilter('parcel-hover', ["==", "RELKEY", props.RELKEY]);
-      	document.getElementById('panel').innerHTML =
-      	'<div><h3> <u>Address:</u> ' + props.ST_NUM  + '&nbsp' + props.ST_NAME + '&nbsp' + props.ST_TYPE +
-        '</h3></div>' + '<div><h3> <u>Land Use:</u> ' + props.PROP_CL + '</h3></div>' + '<div><h3> <u>Area:</u> '
-        + Math.round(props.area) + ' sq. ft </h3></div>' + '<div><h3> <u>Value:</u>  $ '+ Math.round(props.LAND_VAL) + '</h3></div>';
-
+      	document.getElementById('panel').innerHTML = JSON.stringify(props);
       				} else {
       					map.setFilter('parcel-hover', ["==", "RELKEY", ""]);
       				}
