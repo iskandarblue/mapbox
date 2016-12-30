@@ -422,12 +422,12 @@
     .uil-ellipsis-css {
       visibility: hidden;
       background: none;
-      position: absolute;
+      position: fixed;
       z-index: 10;
-      width: 200px;
-      height: 250px;
-      top: 130px;
-      left: 65px;
+      top: 50%;
+      left: 50%;
+      margin-top: -30px;
+      margin-left: -30px;
     }
     .uil-ellipsis-css .ib {
       width: 100%;
@@ -458,10 +458,10 @@
       margin: 0px;
     }
     .uil-ellipsis-css .circle:nth-of-type(2n+1) > div {
-      background: #403d3d;
+      background: rgba(12, 12, 12, 0.8);
     }
     .uil-ellipsis-css .circle:nth-of-type(2n) > div {
-      background: #808a80;
+      background: rgba(250,250,250, 0.8);
     }
     .circle:nth-of-type(1) {
       -ms-animation-delay: 0s;
@@ -532,7 +532,7 @@
             color: rgba(250, 250, 250, 0.8);
             position: absolute;
             width: 120px;
-            top: 275px;
+            top: 255px;
             right: 0px;
             padding: 5px;
         }
@@ -588,7 +588,7 @@
           font-family: 'Open Sans', sans-serif; left: 0; right: 0;}
         #divContainer {position: absolute; border:dashed 1px #CCC;width:120px;height:120px;padding:5px;margin:5px;font:13px Arial;cursor:move;float:left;}
         #map { position:absolute; top:0; bottom:0; width:100%; }
-        #panel {
+      /*  #panel {
           visibility: visible;
           position: relative;
           top: 60px;
@@ -600,24 +600,39 @@
           color: #eee;
           padding: 10px;
           font-family: 'Open Sans', sans-serif;
+        }  */
+        #toggle
+        {
+          position: absolute;
+          border: 0;
+          z-index: 1;
+          height: 8%;
+          bottom: 80px;
+          right: -10px;
+          width: 120px;
+          color: rgba(250, 250, 250, 0.8);
+          margin-left: 20px;
+          font-family: 'Open Sans', sans-serif;
+          border-radius: 5px;
         }
+
 
         #menu {
           position: absolute;
-          overflow-y: auto;
-          height: 35%;
-          bottom: 100px;
-          align: right;
+          border: 0;
+          background-color: rgba(12, 12, 12, 0.8);
+          height: 12%;
+          bottom: 200px;
           right: 5px;
-          border: 2px solid lightgrey;
+          width: 120px;
+          font-family: 'Open Sans', sans-serif;
           border-radius: 5px;
-          font-family: 'Open Sans', sans-serif
         }
 
         .item {
           border: 1px solid grey;
           color: white;
-          background: rgba(0, 0, 0, 0.9);
+          background: rgba(12, 12, 12, 0.8);
           padding: 5px;
           cursor: pointer;
         }
@@ -669,6 +684,15 @@
       	background: url(images/loader-64x/Preloader_2.gif) center no-repeat #fff;
       }
 
+      .mapboxgl-popup {
+      overflow: auto;
+      max-width: 400px;
+      max-height: 300px;
+      font: 12px/20px 'Open Sans', sans-serif;
+      border-radius: 5px;
+
+      }
+
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -688,13 +712,7 @@
 <div id='map'></div>
 
 <div id='menu'>
-	<div id='toggle' style="background-color: rgba(0, 0, 0, 0.9)" class='item'>
-    <p><input id='basic' type='radio' name='rtoggle' value='basic' '>
-    <label for='basic'>Basic</label></p>
-    <p><input id='emerald' type='radio' name='rtoggle' value='emerald'>
-    <label for='emerald'>Emerald</label></p>
-    <p><input id='light' type='radio' name='rtoggle' value='light'>
-    <label for='light'>Light</label></p>
+	<div id='toggle'>
     <p><input id='dark' type='radio' name='rtoggle' value='dark' checked='checked'>
     <label for='dark'>Dark</label></p>
     <p><input id='satellite' type='radio' name='rtoggle' value='satellite'>
@@ -722,7 +740,6 @@
 </div>
 </div>
 
-<div id ='panel'>
 </div>
 
 <div id='legend'>
@@ -745,8 +762,6 @@
         <input id='slider' type='range' min='0' max='100' step='0' value='50' />
     </div>
 </div>
-
-
 
 
 <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
@@ -781,6 +796,15 @@ var inputs = layerList.getElementsByTagName('input');
 function switchLayer(layer) {
     var layerId = layer.target.id;
     map.setStyle('mapbox://styles/mapbox/' + layerId + '-v9');
+    var linkC = document.getElementById('Dal06');
+    linkC.className = 'mode';
+    var linkD = document.getElementById('Dal11');
+    linkD.className = 'mode';
+    var linkE = document.getElementById('Dal16');
+    linkE.className = 'mode';
+    var linkF = document.getElementById('Oak16');
+    linkF.className = 'mode';
+
 }
 
 for (var i = 0; i < inputs.length; i++) {
@@ -847,7 +871,7 @@ var sliderValue = document.getElementById('slider-value');
 
 /*  Add first layer */
 
-map.on('load', function () {
+map.on('style.load', function () {
     map.addSource('parcels', {
         type: 'vector',
         url: 'mapbox://iskandarblue.4sjpf86x'
@@ -875,8 +899,8 @@ map.on('load', function () {
           },
           'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
           'fill-opacity':0.5
-      },
-  }, 'road-primary');
+      }
+  });
 
 /*  Add second layer */
 
@@ -912,8 +936,8 @@ map.on('load', function () {
         },
         'fill-outline-color': 'rgba(250, 250, 250, 0.9)',
         'fill-opacity':0.5
-    },
-},  'road-primary');
+    }
+});
 
 /*  Add third layer */
 
@@ -950,8 +974,8 @@ map.addLayer({
       },
       'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
       'fill-opacity':0.5
-    },
-  },  'road-primary');
+    }
+  });
 
   map.addSource('parcels_160', {
       type: 'vector',
@@ -989,8 +1013,8 @@ map.addLayer({
         },
         'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
         'fill-opacity':0.5
-      },
-    },  'road-primary');
+      }
+    });
 
 /*  Add hover layers */
 
@@ -1004,7 +1028,7 @@ map.addLayer({
           'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
       },
     "filter": ["==", "RELKEY", ""]
-  },  'road-primary');
+  });
 
 
     map.addLayer({
@@ -1017,7 +1041,7 @@ map.addLayer({
             'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
         },
       "filter": ["==", "RELKEY", ""]
-    },  'road-primary');
+    });
 
 
       map.addLayer({
@@ -1030,7 +1054,7 @@ map.addLayer({
               'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
           },
         "filter": ["==", "RELKEY", ""]
-      },  'road-primary');
+      });
 
       map.addLayer({
           'id': 'parcel-hover4',
@@ -1042,7 +1066,7 @@ map.addLayer({
               'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
           },
         "filter": ["==", "RELKEY", ""]
-      },  'road-primary');
+      });
 
       map.addSource('single-point', {
        "type": "geojson",
@@ -1092,7 +1116,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
         var linkB = document.getElementById('Dal11');
         var linkC = document.getElementById('Dal16');
         var linkD = document.getElementById('Oakland');
-        $('#panel').html("");
+    /*    $('#panel').html(""); */
 
         if (visibility === 'visible') {
 
@@ -1138,7 +1162,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
             var linkB = document.getElementById('Dal11');
             var linkC = document.getElementById('Dal16');
             var linkD = document.getElementById('Oakland');
-            $('#panel').html("");
+    /*        $('#panel').html("");   */
 
             linkB.className = 'mode';
 
@@ -1187,7 +1211,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                     var linkC = document.getElementById('Dal16');
                     var linkD = document.getElementById('Oakland');
                     linkC.className = 'mode';
-                    $('#panel').html("");
+      /*              $('#panel').html("");      */
 
                     if (visibility === 'visible') {
 
@@ -1379,28 +1403,63 @@ document.getElementById('Dal06').addEventListener('click', function () {
                             map.setLayoutProperty('parcel-hover2','visibility', 'none');
                             map.setLayoutProperty('parcel-hover3','visibility', 'none');
                             map.setLayoutProperty('parcel-hover4','visibility', 'none');
-                            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].sptbcode +  '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
+                    /*        document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].sptbcode +  '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
+                            var popup = new mapboxgl.Popup({
+                              closeButton: true,
+                              closeOnClick: true,
+                              anchor: 'bottom-left',
+                            })
+                                .setLngLat(e.lngLat)
+                                .setHTML('<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>')
+                                .addTo(map);
+
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
                                 map.setFilter('parcel-hover2', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                 map.setLayoutProperty('parcel-hover2','visibility', 'visible');
                                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover3','visibility', 'none');
                                 map.setLayoutProperty('parcel-hover4','visibility', 'none');
-                                document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
+                      /*          document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
+                                var popup = new mapboxgl.Popup({
+                                  closeButton: true,
+                                  closeOnClick: true,
+                                  anchor: 'bottom-left',
+                                })
+                                    .setLngLat(e.lngLat)
+                                    .setHTML('<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>')
+                                    .addTo(map);
                               } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
                                     map.setLayoutProperty('parcel-hover','visibility', 'none');
                                     map.setLayoutProperty('parcel-hover2','visibility', 'none');
                                     map.setLayoutProperty('parcel-hover4','visibility', 'none');
-                                    document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].parent + '</div>' + '<div>' + jsonRes[0].child + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].zone_dist + '</div>' +'<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
+                    /*            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].parent + '</div>' + '<div>' + jsonRes[0].child + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].zone_dist + '</div>' +'<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';  */
+                                    var popup = new mapboxgl.Popup({
+                                      closeButton: true,
+                                      closeOnClick: true,
+                                      anchor: 'bottom-left',
+                                    })
+                                        .setLngLat(e.lngLat)
+                                        .setHTML('<div>' + jsonRes[0].parent + '</div>'  + '<div>' + jsonRes[0].child + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].zone_dist + '</div>' + '<div>' + 'Census Tract: ' + jsonRes[0].tractce + '</div>')
+                                        .addTo(map);
                                   } else if (features.length > 0 && features[0].layer.id === 'parcel160') {
                                         map.setFilter('parcel-hover4', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                         map.setLayoutProperty('parcel-hover4','visibility', 'visible');
                                         map.setLayoutProperty('parcel-hover3','visibility', 'none');
                                         map.setLayoutProperty('parcel-hover','visibility', 'none');
                                         map.setLayoutProperty('parcel-hover2','visibility', 'none');
-                                        document.getElementById('panel').innerHTML = '<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';
+                                      /*  document.getElementById('panel').innerHTML = '<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
+                                        var popup = new mapboxgl.Popup({
+                                          closeButton: true,
+                                          closeOnClick: true,
+                                          anchor: 'bottom-left',
+                                        })
+                                            .setLngLat(e.lngLat)
+                                            .setHTML('<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>')
+                                            .addTo(map);
+
+
                                         } else {
                                               map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
                                               map.setFilter('parcel-hover2', ['==', 'RELKEY', '']);
@@ -1423,7 +1482,6 @@ var makeAjaxRequest = function(url, params) {
     				url: url,
  	           type: 'GET', 
             beforeSend: function(){
-   $('#panel').html("")
    $('.uil-ellipsis-css').css("visibility", "visible");
  },
             	dataType: 'json', 
