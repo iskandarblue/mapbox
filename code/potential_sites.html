@@ -110,7 +110,7 @@ myLayer.on('layeradd', function(e) {
     // Create custom popup content
     var popupContent =  '<a target="_blank" class="popup" href="' + feature.properties.url + '">' +
                             '<img src="' + feature.properties.image + '" />' +
-                            feature.properties.city + feature.properties.location
+                            feature.properties.city +
                         '</a>';
 
     // http://leafletjs.com/reference.html#popup
@@ -124,6 +124,7 @@ myLayer.on('layeradd', function(e) {
 myLayer.setGeoJSON(geoJson);
 
 new L.Control.Zoom({ position: 'topright' }).addTo(map);
+
 </script>
 </body>
 </html>
