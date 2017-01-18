@@ -4,8 +4,8 @@
 <meta charset=utf-8 />
 <title>CyArk sites</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-<script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
-<link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css' rel='stylesheet' />
 <style>
   * { font-family: Arial, sans-serif; }
   body { margin:0; padding:0; }
@@ -122,6 +122,8 @@ myLayer.on('layeradd', function(e) {
 
 // Add features to the map
 myLayer.setGeoJSON(geoJson);
+
+new L.Control.Zoom({ position: 'topright' }).addTo(map);
 </script>
 </body>
 </html>

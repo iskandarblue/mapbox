@@ -679,12 +679,25 @@ background: url(images/loader-64x/Preloader_2.gif) center no-repeat #fff;
 }
 
 .mapboxgl-popup {
-overflow: auto;
-max-width: 400px;
-max-height: 300px;
+
+max-width: 200px;
+max-height: 200px;
 font: 12px/20px 'Open Sans', sans-serif;
 border-radius: 5px;
 
+}
+
+.mapboxgl-popup-content {
+    overflow: auto;
+    color: #fff;
+    background: rgba(12, 12, 12, 0.8);
+    border-radius: 5px;
+
+}
+
+.mapboxgl-popup-closeButton {
+
+  background: #fff;
 }
 
 </style>
@@ -1333,7 +1346,14 @@ map.on('mousemove', function (e) {
 map.on('click', function (e) {
     // Use queryRenderedFeatures to get features at a click event's point
     // Use layer option to avoid getting results from other layers
+
+
 var features = map.queryRenderedFeatures(e.point);
+
+if (!features.length) {
+    return;
+}
+
 
 var parcelKey = features[0].properties.RELKEY
 var layerName = features[0].layer.id
@@ -1381,12 +1401,7 @@ function addCommas(nStr) {
 
 function replacer(key, value) {
           // Filtering out properties
-          if (value === null || key=="wkb_geometry" || key=="wkb_geometry"
-        || key=="shapeid_le" || key=="shape_ar" || key=="shape_stle"
-        || key=="shape_st_1" || key=="centroid_x" || key=="centroid_y"
-        || key=="shape_star"|| key=="shape_st_2" || key=="objectid"
-        || key=="shape.star"|| key=="shape.stle" || key=="ogc_fid"
-        || key=="relkey" || key=="fid_parcel"|| key=="shapeid_ar" || key=="area" || key=="len") {
+          if (value === null) {
             return undefined;
           }
           return value;
@@ -1405,7 +1420,7 @@ function replacer(key, value) {
                               anchor: 'bottom-left',
                             })
                                 .setLngLat(e.lngLat)
-                                .setHTML('<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>')
+                                .setHTML('<div>' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'area : ' + jsonRes[0].area_feet + superText.sup(2) + '</div>' + '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'zone: ' + jsonRes[0].sptbcode + '</div>')
                                 .addTo(map);
 
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
@@ -1417,8 +1432,7 @@ function replacer(key, value) {
                       /*          document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
                                 var popup = new mapboxgl.Popup({
                                   closeButton: true,
-                                  closeOnClick: true,
-                                  anchor: 'bottom-left',
+                                  closeOnClick: true
                                 })
                                     .setLngLat(e.lngLat)
                                     .setHTML('<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>')
@@ -1448,13 +1462,20 @@ function replacer(key, value) {
                                         var popup = new mapboxgl.Popup({
                                           closeButton: true,
                                           closeOnClick: true,
-                                          anchor: 'bottom-left',
+                                          autoPan: true,
+                                          anchor: 'left'
                                         })
                                             .setLngLat(e.lngLat)
-                                            .setHTML('<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>')
+                                            .setHTML('<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'OGC_FID: ' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' +
+                                            '<div>' + 'Overlay: ' + jsonRes[0].overlay + '</div>'  + '<div>' + 'Zone label: ' + jsonRes[0].znlabel + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>'
+                                            + '<div>' + 'Date updated: ' +  jsonRes[0].date_updat + '</div>' + '<div>' + 'APN sort: ' +  jsonRes[0].apn_sort + '</div>'+ '<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'OGC_FID: ' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' +
+                                            '<div>' + 'Overlay: ' + jsonRes[0].overlay + '</div>'  + '<div>' + 'Zone label: ' + jsonRes[0].znlabel + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>'
+                                            + '<div>' + 'Date updated: ' +  jsonRes[0].date_updat + '</div>' + '<div>' + 'APN sort: ' +  jsonRes[0].apn_sort + '</div>')
                                             .addTo(map);
+/*
+'<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'
 
-
+*/
                                         } else {
                                               map.setFilter('parcel-hover', ['==', 'RELKEY', '']);
                                               map.setFilter('parcel-hover2', ['==', 'RELKEY', '']);
