@@ -680,17 +680,17 @@ background: url(images/loader-64x/Preloader_2.gif) center no-repeat #fff;
 
 .mapboxgl-popup {
 
-max-width: 200px;
-max-height: 200px;
+max-width: 400px;
+max-height: 400px;
 font: 12px/20px 'Open Sans', sans-serif;
-border-radius: 5px;
+border-radius: 5px;s
 
 }
 
 .mapboxgl-popup-content {
     overflow: auto;
-    color: #fff;
-    background: rgba(12, 12, 12, 0.8);
+    color: rgba(250, 250, 250, 0.6);
+    background: rgba(12, 12, 12, 0.9);
     border-radius: 5px;
 
 }
@@ -733,7 +733,7 @@ border-radius: 5px;
   <div class = 'mode-selected' id='Dallas'>Dallas</div>
   <div class = 'mode' id='Dal06'>2006</div>
   <div class = 'mode' id='Dal11'>2011</div>
-  <div class = 'mode' id='Dal16'>2016</div>
+  <div class = 'mode' id='Dal16'>2015</div>
     <div class = 'mode' id='Oakland'>Oakland</div>
     <div class = 'mode' id='Oak16'>2016</div>
     <div id='geocoder' class='geocoder'></div>
@@ -941,7 +941,7 @@ map.addLayer({
         ['F3', '#08f'],['A6', '#E9A443'],['E12', '#2EFE64'],['E1', '#2EFE64'],
         ['A7', '#E9A443'],['F2', '#FE2E2E'],['A2', '#E9A443'],['D4','#E8ECFF'],
         ['D3', '#2EFE64'],['EX4', '#A8A8A8'],['A8', '#E9A443'],['C4','#A8A8A8'],
-        ['J5', '#FE2E2E'],['XL', '#A8A8A8'],['C5', '#A8A8A8']
+        ['J5', '#FE2E2E'],['XL', '#A8A8A8'],['C5', '#A8A8A8'], ['O10', '#A8A8A8'], ['O11', '#A8A8A8']
       ]
       },
       'fill-outline-color': 'rgba(250, 250, 250, 0.9)',
@@ -951,15 +951,15 @@ map.addLayer({
 
 /*  Add third layer */
 
-map.addSource('parcels_16', {
+map.addSource('parcels_15', {
     type: 'vector',
-    url: 'mapbox://iskandarblue.bcuv2gqb'
+    url: 'mapbox://iskandarblue.97r8sp4w'
 });
 map.addLayer({
-    "id": "parcel16",
+    "id": "parcel15",
     "type": "fill",
-    "source": "parcels_16",
-    "source-layer": "parcelgeojson",
+    "source": "parcels_15",
+    "source-layer": "parcel15_jgeojson",
     'layout': {
       "visibility" : "none"
     },
@@ -968,19 +968,19 @@ map.addLayer({
 //color code parcels by category ordered by frequency descending
         property: 'sptbcode',
         type: 'categorical',
-        stops: [['R-7.5(A)','#E9A443'],['PD', '#FFFF00'],['R-5(A)', '#E9A443'],
-        ['R-10(A)','#E9A443'], ['R-16(A)','#E9A443'], ['IR','#FE2E2E'], ['CD','#E9A443'],
-        ['TH-3(A)', '#E9A443'], ['MF-2(A)', '#E9A443'],['CR','#08f'],['D(A)', '#E9A443'],
-        ['TH-2(A)', '#E9A443'],['CS', '#08f'], ['R-1ac(A)', '#E9A443'],['A(A)', '#2EFE64'],
-        ['R-1/2ac(A)', '#E9A443'], ['RR', '#08f'], ['MF-1(A)', '#E9A443'], ['IM', '#FE2E2E'],
-        ['TH-1(A)', '#E9A443'], ['MU-3', '#FFFF00'],['LI', '#FE2E2E'], ['R-13(A)', '#E9A443'],
-        ['CA-1(A)', '#08f'], ['MU-1', '#FFFF00'],['MH(A)', '#E9A443'], ['NS(A)', '#08f'],
-        ['NO(A)', '#08f'], ['MU-2', '#FFFF00'], ['LO-1', '#08f'],['P(A)', '#08f'],
-        ['CH', '#E9A443'],['MC-1', '#08f'], ['GO(A)', '#08f'],['LO-3', '#08f'],['WR-5', '#E9A443'],['CA-2(A)', '#08f'],
-        ['MC-3', '#08f'], ['MC-4', '#08f'], ['LO-2', '#08f'], ['WMU-5', '#08f'], ['MU-3(SAH)', '#FFFF00'], ['MF-3(A)', '#E9A443'], ['MF-4(A)', '#E9A443'],
-        ['MF-2(A)(SAH)', '#E9A443'], ['MF-1(A)(SAH)', '#E9A443'],['PFD', '#08f'], ['MC-2', '#08f'],['MF-2', '#E9A443'],
-        ['O-2', '#E8ECFF'], ['WMU-8', '#FFFF00'],['MU-2(SAH)', '#FFFF00'], ['GR', '#08f'],['MO-1', '#08f'], ['MO-2', '#08f'], ['MU-1(SAH)', '#FFFF00']
-        ]
+        stops: [['A11', '#E9A443'], ['A1', '#E9A443'],['C11', '#E9A443'],
+        ['C12', '#08f'],['B12', '#E9A443'],['A12', '#E9A443'],['F10', '#08f'],
+        ['B11', '#E9A443'],['C13', '#FE2E2E'],['F1', '#08f'],['D10', '#2EFE64'],
+        ['C1', '#E9A443'], ['J30', '#FE2E2E'], ['C14', '#08f'], ['A4', '#E9A443'],['A3', '#E9A443'],
+        ['F20', '#FE2E2E'],['A20', '#E9A443'],['O1', '#FE2E2E'],['A20', '#E9A443'],
+        ['B2', '#E9A443'],['OL', '#E9A443'],['O', '#E9A443'],['C2', '#E9A443'],
+        ['J51', '#FE2E2E'],['C3', '#08f'],['D1', '#2EFE64'],['D2', '#2EFE64'],
+        ['M4', '#A8A8A8'],['02', '#A8A8A8'],['M6', '#A8A8A8'],['B1', '#E9A443'],
+        ['F3', '#08f'],['A6', '#E9A443'],['E12', '#2EFE64'],['E1', '#2EFE64'],
+        ['A7', '#E9A443'],['F2', '#FE2E2E'],['A2', '#E9A443'],['D4','#E8ECFF'],
+        ['D3', '#2EFE64'],['EX4', '#A8A8A8'],['A8', '#E9A443'],['C4','#A8A8A8'],
+        ['J5', '#FE2E2E'],['XL', '#A8A8A8'],['C5', '#A8A8A8'], ['O10', '#A8A8A8'], ['O11', '#A8A8A8']
+      ]
       },
       'fill-outline-color': 'rgba(250, 250, 250, 0.8)',
       'fill-opacity':0.5
@@ -1057,8 +1057,8 @@ map.addLayer({
       map.addLayer({
           'id': 'parcel-hover3',
           'type': 'fill',
-          "source": "parcels_16",
-          "source-layer": "parcelgeojson",
+          "source": "parcels_15",
+          "source-layer": "parcel15_jgeojson",
           'paint': {
               'fill-color': 'rgba(0, 0, 0, 0.7)',
               'fill-outline-color': 'rgba(255, 0, 0, 1.0)'
@@ -1146,7 +1146,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
             linkD.className = 'mode'
             map.setLayoutProperty('parcel06', 'visibility', 'visible');
             map.setLayoutProperty('parcel11', 'visibility', 'none');
-            map.setLayoutProperty('parcel16', 'visibility', 'none');
+            map.setLayoutProperty('parcel15', 'visibility', 'none');
             map.setLayoutProperty('parcel-hover2','visibility', 'none');
             map.setLayoutProperty('parcel-hover3','visibility', 'none');
 
@@ -1194,7 +1194,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                 linkD.className = 'mode'
                 map.setLayoutProperty('parcel06', 'visibility', 'none');
                 map.setLayoutProperty('parcel11', 'visibility', 'visible');
-                map.setLayoutProperty('parcel16', 'visibility', 'none');
+                map.setLayoutProperty('parcel15', 'visibility', 'none');
                 map.setLayoutProperty('parcel-hover','visibility', 'none');
                 map.setLayoutProperty('parcel-hover3','visibility', 'none');
 
@@ -1215,7 +1215,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
             document.getElementById('Dal16').addEventListener('click', function () {
                     // Fly to a random location by offsetting the point -74.50, 40
                     // by up to 5 degrees.
-                    var visibility = map.getLayoutProperty('parcel16', 'visibility');
+                    var visibility = map.getLayoutProperty('parcel15', 'visibility');
                     var link = document.getElementById('Dal06');
                     var linkB = document.getElementById('Dal11');
                     var linkC = document.getElementById('Dal16');
@@ -1228,7 +1228,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                       link.className = 'mode'
                       linkB.className = 'mode'
                       linkC.className = 'mode'
-                        map.setLayoutProperty('parcel16', 'visibility', 'none');
+                        map.setLayoutProperty('parcel15', 'visibility', 'none');
                         map.setLayoutProperty('parcel-hover','visibility', 'none');
                           map.setLayoutProperty('parcel-hover2','visibility', 'none');
                             map.setLayoutProperty('parcel-hover3','visibility', 'none');
@@ -1241,7 +1241,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                       linkD.className = 'mode'
                         map.setLayoutProperty('parcel06', 'visibility', 'none');
                         map.setLayoutProperty('parcel11', 'visibility', 'none');
-                        map.setLayoutProperty('parcel16', 'visibility', 'visible');
+                        map.setLayoutProperty('parcel15', 'visibility', 'visible');
                         map.setLayoutProperty('parcel-hover','visibility', 'none')
                         map.setLayoutProperty('parcel-hover2','visibility', 'none');
                         map.setLayoutProperty('parcel-hover3','visibility', 'none');
@@ -1252,7 +1252,7 @@ document.getElementById('Dal06').addEventListener('click', function () {
                         // Adjust the layers opacity. layer here is arbitrary - this could
                         // be another layer name found in your style or a custom layer
                         // added on the fly using `addSource`.
-                        map.setPaintProperty('parcel16', 'fill-opacity', parseInt(e.target.value, 10) / 100);
+                        map.setPaintProperty('parcel15', 'fill-opacity', parseInt(e.target.value, 10) / 100);
 
                         // Value indicator
                         sliderValue.textContent = e.target.value + '%';
@@ -1355,6 +1355,8 @@ if (!features.length) {
 }
 
 
+
+
 var parcelKey = features[0].properties.RELKEY
 var layerName = features[0].layer.id
 
@@ -1363,7 +1365,92 @@ var url = '/api/parcels/'+layerName+'/parcel/'+parcelKey;  makeAjaxRequest(url
         				.done(function(result) { 
 
 var jsonRes = result.message.rows;
+var newjsonRes = result.message.rows;
 console.log(jsonRes[0]);
+
+
+
+delete jsonRes[0]["geom"];
+delete jsonRes[0]["shapeid_le"];
+delete jsonRes[0]["shapeid_ar"];
+delete jsonRes[0]["perimeter_"];
+delete jsonRes[0]["pid"];
+delete jsonRes[0]["fipscnty"];
+delete jsonRes[0]["fipscity"];
+delete jsonRes[0]["acct_"];
+delete jsonRes[0]["gis_acct"];
+delete jsonRes[0]["res_com"];
+delete jsonRes[0]["sptbcode"];
+delete jsonRes[0]["mapsco_gr"];
+delete jsonRes[0]["taxper"];
+delete jsonRes[0]["propnam"];
+delete jsonRes[0]["taxval"];
+delete jsonRes[0]["imp_val"];
+delete jsonRes[0]["land_val"];
+delete jsonRes[0]["certtxval"];
+delete jsonRes[0]["certmkvan"];
+delete jsonRes[0]["certlnval"];
+delete jsonRes[0]["certimval"];
+delete jsonRes[0]["adjtax"];
+delete jsonRes[0]["adjmktval"];
+delete jsonRes[0]["adjimpval"];
+delete jsonRes[0]["adjlndval"];
+delete jsonRes[0]["len"];
+delete jsonRes[0]["wkb_geometry"];
+delete jsonRes[0]["nscbd"];
+delete jsonRes[0]["shape_area"];
+delete jsonRes[0]["shape_len"];
+delete jsonRes[0]["shape_st_2"];
+delete jsonRes[0]["fid_parcel"];
+delete jsonRes[0]["shape_stle"];
+delete jsonRes[0]["book"];
+delete jsonRes[0]["page"];
+delete jsonRes[0]["clca_categ"];
+delete jsonRes[0]["centroid_y"];
+delete jsonRes[0]["editor"];
+delete jsonRes[0]["shape_st_4"];
+delete jsonRes[0]["shape_st_1"];
+delete jsonRes[0]["centroid_x"];
+delete jsonRes[0]["shape_star"];
+delete jsonRes[0]["apn"];
+delete jsonRes[0]["shape_st_3"];
+delete jsonRes[0]["comments"];
+delete jsonRes[0]["apn_print"];
+delete jsonRes[0]["last document prefix"];
+delete jsonRes[0]["last document series"];
+delete jsonRes[0]["wkb_geometry"];
+delete jsonRes[0]["last document input date (ccyymmdd)"];
+delete jsonRes[0]["last document date (ccyymmdd)"];
+delete jsonRes[0]["ma zip+4"];
+delete jsonRes[0]["ma barcode walk sequence"];
+delete jsonRes[0]["ma barcode check digit"];
+delete jsonRes[0]["ma effective date (ccyymmdd)"];
+delete jsonRes[0]["ma source code"];
+delete jsonRes[0]["_y_ if apn is part of an economic unit"];
+
+
+
+/*
+function showObject(obj) {
+  var result = {};
+  for (var p in obj) {
+    if( obj.hasOwnProperty(p) ) {
+      result += p + " , " + obj[p] + "\n";
+    }
+  }
+  return result;
+}
+
+console.log(showObject(jsonRes[0]));
+
+
+*/
+/*
+  delete feature.properties["field_1"];
+    delete feature.properties["lon"];
+      delete feature.properties["lat"];
+        delete feature.properties["code"];
+        delete feature.properties["title"]; */
 
 if (features.length) {
     // Get coordinates from the symbol and center the map on those coordinates
@@ -1401,10 +1488,16 @@ function addCommas(nStr) {
 
 function replacer(key, value) {
           // Filtering out properties
-          if (value === null) {
+          if (value === null || value === ""  || typeof(value) == "string" && value.includes("$-")) {
             return undefined;
           }
-          return value;
+          else if (typeof(value) != "string"){
+            return value
+          } else if (value.trim() === "") {
+            return undefined
+          } else {
+            return value.trim().bold().fontcolor("CD9B1D")
+          }
         }
 
                         if (features.length > 0 && features[0].layer.id === 'parcel06') {
@@ -1417,10 +1510,10 @@ function replacer(key, value) {
                             var popup = new mapboxgl.Popup({
                               closeButton: true,
                               closeOnClick: true,
-                              anchor: 'bottom-left',
+                              anchor: 'left'
                             })
                                 .setLngLat(e.lngLat)
-                                .setHTML('<div>' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'area : ' + jsonRes[0].area_feet + superText.sup(2) + '</div>' + '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'zone: ' + jsonRes[0].sptbcode + '</div>')
+                                .setHTML('<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "").replace(/[{}]/g, '') + '</pre>')
                                 .addTo(map);
 
                           } else if (features.length > 0 && features[0].layer.id === 'parcel11') {
@@ -1431,13 +1524,14 @@ function replacer(key, value) {
                                 map.setLayoutProperty('parcel-hover4','visibility', 'none');
                       /*          document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
                                 var popup = new mapboxgl.Popup({
-                                  closeButton: true,
-                                  closeOnClick: true
+                                  closeButton: false,
+                                  closeOnClick: true,
+                                  anchor: 'left'
                                 })
                                     .setLngLat(e.lngLat)
-                                    .setHTML('<div>' + jsonRes[0].prop_cl + '</div>'  + '<div>' + 'Zone: ' + jsonRes[0].sptbcode + '</div>')
+                                    .setHTML('<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "").replace(/[{}]/g, '') + '</pre>')
                                     .addTo(map);
-                              } else if (features.length > 0 && features[0].layer.id === 'parcel16') {
+                              } else if (features.length > 0 && features[0].layer.id === 'parcel15') {
                                     map.setFilter('parcel-hover3', ['==', 'RELKEY', features[0].properties.RELKEY]);
                                     map.setLayoutProperty('parcel-hover3','visibility', 'visible');
                                     map.setLayoutProperty('parcel-hover','visibility', 'none');
@@ -1445,12 +1539,13 @@ function replacer(key, value) {
                                     map.setLayoutProperty('parcel-hover4','visibility', 'none');
                     /*            document.getElementById('panel').innerHTML = '<div>' + jsonRes[0].parent + '</div>' + '<div>' + jsonRes[0].child + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].zone_dist + '</div>' +'<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>';  */
                                     var popup = new mapboxgl.Popup({
-                                      closeButton: true,
+                                      closeButton: false,
                                       closeOnClick: true,
-                                      anchor: 'bottom-left',
+                                      autoPan: true,
+                                      anchor: 'left'
                                     })
                                         .setLngLat(e.lngLat)
-                                        .setHTML('<div>' + jsonRes[0].parent + '</div>'  + '<div>' + jsonRes[0].child + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].zone_dist + '</div>' + '<div>' + 'Census Tract: ' + jsonRes[0].tractce + '</div>')
+                                        .setHTML('<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "").replace(/[{}]/g, '') + '</pre>')
                                         .addTo(map);
                                   } else if (features.length > 0 && features[0].layer.id === 'parcel160') {
                                         map.setFilter('parcel-hover4', ['==', 'RELKEY', features[0].properties.RELKEY]);
@@ -1460,17 +1555,13 @@ function replacer(key, value) {
                                         map.setLayoutProperty('parcel-hover2','visibility', 'none');
                                       /*  document.getElementById('panel').innerHTML = '<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' + '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'; */
                                         var popup = new mapboxgl.Popup({
-                                          closeButton: true,
+                                          closeButton: false,
                                           closeOnClick: true,
                                           autoPan: true,
                                           anchor: 'left'
                                         })
                                             .setLngLat(e.lngLat)
-                                            .setHTML('<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'OGC_FID: ' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' +
-                                            '<div>' + 'Overlay: ' + jsonRes[0].overlay + '</div>'  + '<div>' + 'Zone label: ' + jsonRes[0].znlabel + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>'
-                                            + '<div>' + 'Date updated: ' +  jsonRes[0].date_updat + '</div>' + '<div>' + 'APN sort: ' +  jsonRes[0].apn_sort + '</div>'+ '<div>' + jsonRes[0]["use common name"] + '</div>' + '<div>' + 'OGC_FID: ' + jsonRes[0].ogc_fid + '</div>' + '<div>' + 'Zone: ' + jsonRes[0].basezone + '</div>' +
-                                            '<div>' + 'Overlay: ' + jsonRes[0].overlay + '</div>'  + '<div>' + 'Zone label: ' + jsonRes[0].znlabel + '</div>' + '<div>' + 'Census Tract: ' +  jsonRes[0].tractce + '</div>'
-                                            + '<div>' + 'Date updated: ' +  jsonRes[0].date_updat + '</div>' + '<div>' + 'APN sort: ' +  jsonRes[0].apn_sort + '</div>')
+                                            .setHTML('<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "").replace(/[{}]/g, '') + '</pre>')
                                             .addTo(map);
 /*
 '<pre>' + JSON.stringify(jsonRes[0], replacer, "\t").replace(/\"/g, "").replace(/,/g, "") + '</pre>'
